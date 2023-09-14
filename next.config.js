@@ -4,7 +4,7 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 
 module.exports = withBundleAnalyzer({
   reactStrictMode: false,
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
+  // experimental: {
+  //   serverActions: true,
+  // },
 });
