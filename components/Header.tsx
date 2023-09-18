@@ -2,8 +2,8 @@
 import { UserButton } from '@clerk/nextjs';
 import { dark } from '@clerk/themes';
 import {
-  ActionIcon,
   Burger,
+  Card,
   Flex,
   Indicator,
   MantineColorScheme,
@@ -15,6 +15,7 @@ import {
 } from '@mantine/core';
 import { IconShoppingCart } from '@tabler/icons-react';
 import { useQueryClient } from '@tanstack/react-query';
+import Link from 'next/link';
 import { useState } from 'react';
 
 function Header({ toggle, opened }: { toggle: () => void; opened: boolean }) {
@@ -64,15 +65,20 @@ function Header({ toggle, opened }: { toggle: () => void; opened: boolean }) {
           style={{ minWidth: 150 }}
         />
 
-        <Indicator label="8">
-          <ActionIcon
-            bg={computedColorScheme === 'dark' ? theme.colors.dark[4] : theme.primaryColor}
-            size="xl"
-            aria-label="Cart icon"
-          >
-            <IconShoppingCart />
-          </ActionIcon>
-        </Indicator>
+        <Link href="/cart">
+          <Indicator label={'0'}>
+            <Card
+              withBorder
+              p={6}
+              style={{ cursor: 'pointer' }}
+              // bg={computedColorScheme === 'dark' ? theme.colors.dark[4] : theme.primaryColor}
+              // size="xl"
+              aria-label="Cart icon"
+            >
+              <IconShoppingCart />
+            </Card>
+          </Indicator>
+        </Link>
         <UserButton afterSignOutUrl="/sign-in" appearance={appearance} />
       </Flex>
     </Flex>
