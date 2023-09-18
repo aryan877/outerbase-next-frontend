@@ -2,7 +2,7 @@ import z from 'zod';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 
 export const cartRouter = createTRPCRouter({
-  addItemToCart: protectedProcedure
+  modifyItemInCart: protectedProcedure
     .input(
       z.object({
         itemid: z.number(),
@@ -38,4 +38,28 @@ export const cartRouter = createTRPCRouter({
         throw new Error('Failed to add item to cart');
       }
     }),
+  getCartItems: protectedProcedure.query(async (opts) => {
+    try {
+      const userid = opts.ctx.auth.userId;
+      const url = `https://zestful-tomato.cmd.outerbase.io/get-cart-items?userid=${encodeURIComponent(
+        userid
+      )}`;
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (!response.ok) {
+        throw new Error('Failed to add item to cart');
+      }
+      const data = await response.json();
+      console.log(data);
+
+      return data;
+    } catch (error) {
+      console.error('Error adding item to cart:', error);
+      throw new Error('Failed to add item to cart');
+    }
+  }),
 });

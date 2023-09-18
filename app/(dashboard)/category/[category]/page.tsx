@@ -1,55 +1,76 @@
+// Import necessary libraries and components
 'use client';
 import { trpc } from '@/app/_trpc/client';
-import { FoodItem } from '@/types/types';
-import { Button, Card, Group, Image, NumberInput, Stack, Text } from '@mantine/core';
+import { CartItem, FoodItem } from '@/types/types';
+import { formatCategoryName } from '@/utils/strings';
+import { Stack, Title } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
+import { useQueryClient } from '@tanstack/react-query';
+import { getQueryKey } from '@trpc/react-query';
 import { useParams } from 'next/navigation';
+import FoodItemCard from './components/FoodItemCard';
 
-function page() {
+function Page() {
   const { category } = useParams();
+  const queryClient = useQueryClient();
 
-  const { data: { response: { items } = { items: [] } } = {}, isLoading } =
-    trpc.category.listCategoryItems.useQuery(
-      { slug: category },
-      {
-        staleTime: 10 * (60 * 1000), // 10 mins
-        cacheTime: 15 * (60 * 1000), // 15 mins
-      }
-    );
-  // const listChannelsKey = getQueryKey(trpc.channels.listChannels, undefined, 'query');
-  // queryClient.refetchQueries(listChannelsKey);
-  const addItemToCartMutation = trpc.cart.addItemToCart.useMutation();
+  const {
+    data: { response: { items: foodItems } = { items: [] } } = {},
+    isLoading: isLoadingFoodItems,
+  } = trpc.category.listCategoryItems.useQuery(
+    { slug: category },
+    {
+      staleTime: 10 * (60 * 1000), // 10 mins
+      cacheTime: 15 * (60 * 1000), // 15 mins
+    }
+  );
 
-  const fooditems: FoodItem[] = items;
+  // Fetch cart items data using trpc query
+  const {
+    data: { response: { items: cartItems } = { items: [] } } = {},
+    isLoading: isLoadingCartItems,
+  } = trpc.cart.getCartItems.useQuery(undefined, {
+    // staleTime: 10 * (60 * 1000), // 10 mins
+    // cacheTime: 15 * (60 * 1000), // 15 mins
+  });
 
-  const addToCartHandler = (id: string) => {
-    const addingToCartNotificationId = notifications.show({
+  const modifyItemInCartMutation = trpc.cart.modifyItemInCart.useMutation();
+
+  const myFoodItems: FoodItem[] = foodItems;
+  const myCartItems: CartItem[] = cartItems;
+
+  // Function to handle adding or modifying items in the cart
+  const addToCartHandler = (id: number, quantity?: number) => {
+    console.log(quantity);
+    const modifyingCartNotificationId = notifications.show({
       loading: true,
-      title: 'Adding Item to cart',
-      message: 'The selected item is being added to your cart.',
+      title: 'Modifying Item in Cart',
+      message: 'The selected item is being modified in your cart.',
       color: 'yellow',
     });
 
-    addItemToCartMutation.mutate(
-      { itemid: parseInt(id), quantity: 1 },
+    modifyItemInCartMutation.mutate(
+      { itemid: id, quantity: Number(quantity) },
       {
-        onSuccess: ({ data }) => {
+        onSuccess: () => {
           notifications.update({
-            id: addingToCartNotificationId,
+            id: modifyingCartNotificationId,
             loading: false,
-            title: 'Item Added to Cart',
-            message: 'The selected item has been added to your cart.',
+            title: 'Item Modified in Cart',
+            message: 'The selected item has been modified in your cart.',
             autoClose: 2000,
             color: 'green',
           });
+          const getCartItemsQueryKey = getQueryKey(trpc.cart.getCartItems, undefined, 'query');
+          queryClient.refetchQueries(getCartItemsQueryKey);
         },
         onError: () => {
-          notifications.show({
-            id: addingToCartNotificationId,
+          notifications.update({
+            id: modifyingCartNotificationId,
             loading: false,
-            title: 'Failed to Add Item to Cart',
+            title: 'Failed to Modify Item in Cart',
             message:
-              'An error occurred while adding the item to your cart. Please try again later.',
+              'An error occurred while modifying the item in your cart. Please try again later.',
             autoClose: 2000,
             color: 'red',
           });
@@ -60,53 +81,25 @@ function page() {
 
   return (
     <Stack>
-      {isLoading ? (
+      <Title order={4}>{formatCategoryName(category)}</Title>
+      {isLoadingFoodItems || isLoadingCartItems ? (
         <div>Loading...</div>
       ) : (
-        fooditems.map((fooditem) => (
-          <Card
-            withBorder
-            key={fooditem.itemid}
-            shadow="xs"
-            radius="md"
-            style={{ cursor: 'pointer' }}
-          >
-            <Group gap="md" align="start">
-              <Image
-                height={200}
-                width={200}
-                style={{ height: '200px', width: '200px' }}
-                src={fooditem.image}
-                alt={fooditem.name}
-              />
-              <Stack>
-                <Text size="lg" fw={700}>
-                  {fooditem.name}
-                </Text>
-                <Text size="md">${fooditem.price}</Text>
-                <NumberInput
-                  label="Choose Quantity"
-                  placeholder="Enter quantity"
-                  clampBehavior="strict"
-                  min={1}
-                  max={100}
-                  defaultValue={1}
-                  allowNegative={false}
-                />
-                <Button
-                  onClick={() => {
-                    addToCartHandler(fooditem.itemid);
-                  }}
-                >
-                  Add
-                </Button>
-              </Stack>
-            </Group>
-          </Card>
-        ))
+        myFoodItems.map((fooditem) => {
+          const cartItem = myCartItems.find((item) => item.itemid === fooditem.itemid);
+
+          return (
+            <FoodItemCard
+              key={fooditem.itemid}
+              fooditem={fooditem}
+              cartItem={cartItem}
+              addToCartHandler={addToCartHandler}
+            />
+          );
+        })
       )}
     </Stack>
   );
 }
 
-export default page;
+export default Page;

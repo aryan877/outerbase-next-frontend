@@ -13,3 +13,10 @@ export type FoodItem = {
   categoryid: string;
   slug: string;
 };
+
+export type CartItem = {
+  cartitemid: string;
+  itemid: string;
+  userid: string;
+  quantity: number;
+};
