@@ -1,6 +1,6 @@
 import NavigationProvider from '@/components/NavigationProgressProvider';
 import { ClerkProvider } from '@clerk/nextjs';
-import { ColorSchemeScript, MantineProvider } from '@mantine/core';
+import { MantineProvider } from '@mantine/core';
 import '@mantine/core/styles.css';
 import '@mantine/dates/styles.css';
 import '@mantine/dropzone/styles.css';
@@ -22,7 +22,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <ClerkProvider>
       <html lang="en">
         <head>
-          <ColorSchemeScript />
           <link rel="shortcut icon" href="/favicon.svg" />
         </head>
         <body>
@@ -33,16 +32,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 primaryColor: 'primary',
                 colors: {
                   primary: [
+                    '#FF6B6B',
+                    '#FF4F4F',
+                    '#FF3434',
+                    '#FF1B1B',
+                    '#FF7171',
                     '#FFA07A',
-                    '#FF7F50',
                     '#FF6347',
                     '#FF4500',
                     '#FF8C00',
                     '#FFD700',
-                    '#FFB900',
-                    '#FFA500',
-                    '#FF9000',
-                    '#FF6600',
                   ],
                   secondary: [
                     '#f5f4f5',

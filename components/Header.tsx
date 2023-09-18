@@ -2,20 +2,25 @@
 import { UserButton } from '@clerk/nextjs';
 import { dark } from '@clerk/themes';
 import {
+  ActionIcon,
   Burger,
   Flex,
+  Indicator,
   MantineColorScheme,
   Select,
   Text,
   useComputedColorScheme,
   useMantineColorScheme,
+  useMantineTheme,
 } from '@mantine/core';
+import { IconShoppingCart } from '@tabler/icons-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 
 function Header({ toggle, opened }: { toggle: () => void; opened: boolean }) {
   const { setColorScheme, colorScheme } = useMantineColorScheme();
   const computedColorScheme = useComputedColorScheme('light');
+  const theme = useMantineTheme();
   const queryClient = useQueryClient();
   const [value, setValue] = useState('auto');
   const appearance = {
@@ -58,6 +63,16 @@ function Header({ toggle, opened }: { toggle: () => void; opened: boolean }) {
           placeholder="Select Mode"
           style={{ minWidth: 150 }}
         />
+
+        <Indicator label="8">
+          <ActionIcon
+            bg={computedColorScheme === 'dark' ? theme.colors.dark[4] : theme.primaryColor}
+            size="xl"
+            aria-label="Cart icon"
+          >
+            <IconShoppingCart />
+          </ActionIcon>
+        </Indicator>
         <UserButton afterSignOutUrl="/sign-in" appearance={appearance} />
       </Flex>
     </Flex>

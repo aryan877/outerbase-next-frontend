@@ -1,14 +1,13 @@
-import { Project } from '@/types/types';
-import { create } from 'zustand';
+// import { create } from 'zustand';
 
-interface StoreState {
-  project: Project | null; // Use "null" to represent no project initially
-  setProject: (project: Project | null) => void;
-}
+// interface StoreState {
+//   project: Project | null; // Use "null" to represent no project initially
+//   setProject: (project: Project | null) => void;
+// }
 
-const useProjectStore = create<StoreState>((set) => ({
-  project: null,
-  setProject: (project) => set({ project }),
-}));
+// const useProjectStore = create<StoreState>((set) => ({
+//   project: null,
+//   setProject: (project) => set({ project }),
+// }));
 
-export default useProjectStore;
+// export default useProjectStore;
