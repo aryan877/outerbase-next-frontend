@@ -11,6 +11,7 @@ export type FoodItem = {
   image: string;
   price: number;
   categoryid: string;
+  description: string;
   slug: string;
 };
 

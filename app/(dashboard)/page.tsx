@@ -43,7 +43,7 @@ export default function FoodDeliveryPage() {
                 }}
               >
                 <Group justify="space-between" w="100%">
-                  <Text size="lg" fw={700} style={{ color: 'white' }}>
+                  <Text size="lg" fw={700}>
                     {category.name}
                   </Text>
                   <Image

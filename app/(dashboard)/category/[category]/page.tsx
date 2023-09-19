@@ -34,14 +34,13 @@ function Page() {
     // cacheTime: 15 * (60 * 1000), // 15 mins
   });
 
-  const modifyItemInCartMutation = trpc.cart.modifyItemInCart.useMutation();
+  const modifyItemsInCartMutation = trpc.cart.modifyItemsInCart.useMutation();
 
   const myFoodItems: FoodItem[] = foodItems;
   const myCartItems: CartItem[] = cartItems;
 
   // Function to handle adding or modifying items in the cart
-  const addToCartHandler = (id: number, quantity?: number) => {
-    console.log(quantity);
+  const modifyCartItemsHandler = (id: number, quantity?: number) => {
     const modifyingCartNotificationId = notifications.show({
       loading: true,
       title: 'Modifying Item in Cart',
@@ -49,7 +48,7 @@ function Page() {
       color: 'yellow',
     });
 
-    modifyItemInCartMutation.mutate(
+    modifyItemsInCartMutation.mutate(
       { itemid: id, quantity: Number(quantity) },
       {
         onSuccess: () => {
@@ -93,7 +92,7 @@ function Page() {
               key={fooditem.itemid}
               fooditem={fooditem}
               cartItem={cartItem}
-              addToCartHandler={addToCartHandler}
+              modifyCartItemsHandler={modifyCartItemsHandler}
             />
           );
         })

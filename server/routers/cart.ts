@@ -2,7 +2,7 @@ import z from 'zod';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 
 export const cartRouter = createTRPCRouter({
-  modifyItemInCart: protectedProcedure
+  modifyItemsInCart: protectedProcedure
     .input(
       z.object({
         itemid: z.number(),
@@ -27,15 +27,15 @@ export const cartRouter = createTRPCRouter({
         });
 
         if (!response.ok) {
-          throw new Error('Failed to add item to cart');
+          throw new Error('Failed to modify items in cart');
         }
 
         const data = await response.json();
 
         return data;
       } catch (error) {
-        console.error('Error adding item to cart:', error);
-        throw new Error('Failed to add item to cart');
+        console.error('Error modifying items in cart:', error);
+        throw new Error('Failed to modify items in cart');
       }
     }),
   getCartItems: protectedProcedure.query(async (opts) => {
@@ -51,15 +51,39 @@ export const cartRouter = createTRPCRouter({
         },
       });
       if (!response.ok) {
-        throw new Error('Failed to add item to cart');
+        throw new Error('Failed to get cart items');
       }
       const data = await response.json();
       console.log(data);
 
       return data;
     } catch (error) {
-      console.error('Error adding item to cart:', error);
-      throw new Error('Failed to add item to cart');
+      console.error('Error geting cart items:', error);
+      throw new Error('Failed to get cart items');
+    }
+  }),
+  getCartItemsPopulated: protectedProcedure.query(async (opts) => {
+    try {
+      const userid = opts.ctx.auth.userId;
+      const url = `https://zestful-tomato.cmd.outerbase.io/get-cart-items-populated?userid=${encodeURIComponent(
+        userid
+      )}`;
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (!response.ok) {
+        throw new Error('Failed to get cart items');
+      }
+      const data = await response.json();
+      console.log(data);
+
+      return data;
+    } catch (error) {
+      console.error('Error geting cart items:', error);
+      throw new Error('Failed to get cart items');
     }
   }),
 });

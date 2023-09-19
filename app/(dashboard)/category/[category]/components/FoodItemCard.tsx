@@ -5,10 +5,10 @@ import { Button, Card, Group, Image, NumberInput, Stack, Text } from '@mantine/c
 interface FoodItemCardProps {
   fooditem: FoodItem;
   cartItem: CartItem | undefined; // Define the types for fooditem and cartItem
-  addToCartHandler: (id: number, quantity?: number) => void;
+  modifyCartItemsHandler: (id: number, quantity?: number) => void;
 }
 
-function FoodItemCard({ fooditem, cartItem, addToCartHandler }: FoodItemCardProps) {
+function FoodItemCard({ fooditem, cartItem, modifyCartItemsHandler }: FoodItemCardProps) {
   const quantity = cartItem ? cartItem.quantity : 0;
 
   return (
@@ -29,7 +29,7 @@ function FoodItemCard({ fooditem, cartItem, addToCartHandler }: FoodItemCardProp
           {quantity === 0 ? (
             <Button
               onClick={() => {
-                addToCartHandler(Number(fooditem.itemid), 1);
+                modifyCartItemsHandler(Number(fooditem.itemid), 1);
               }}
             >
               Add
@@ -44,7 +44,7 @@ function FoodItemCard({ fooditem, cartItem, addToCartHandler }: FoodItemCardProp
               value={quantity}
               allowNegative={false}
               onChange={(value) => {
-                addToCartHandler(Number(fooditem.itemid), Number(value));
+                modifyCartItemsHandler(Number(fooditem.itemid), Number(value));
               }}
             />
           )}

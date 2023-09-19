@@ -1,4 +1,6 @@
 'use client';
+import { trpc } from '@/app/_trpc/client';
+import { CartItem } from '@/types/types';
 import { UserButton } from '@clerk/nextjs';
 import { dark } from '@clerk/themes';
 import {
@@ -27,6 +29,20 @@ function Header({ toggle, opened }: { toggle: () => void; opened: boolean }) {
   const appearance = {
     ...(computedColorScheme === 'dark' ? { baseTheme: dark } : {}),
   };
+
+  const {
+    data: { response: { items: cartItems } = { items: [] } } = {},
+    isLoading: isLoadingCartItems,
+  } = trpc.cart.getCartItems.useQuery(undefined, {
+    // staleTime: 10 * (60 * 1000), // 10 mins
+    // cacheTime: 15 * (60 * 1000), // 15 mins
+  });
+
+  const myCartItems: CartItem[] = cartItems;
+
+  const totalQuantity = myCartItems.reduce((total, item) => {
+    return total + (item.quantity || 0);
+  }, 0);
 
   return (
     <Flex justify="space-between" h="100%" align="center" px="md">
@@ -66,7 +82,7 @@ function Header({ toggle, opened }: { toggle: () => void; opened: boolean }) {
         />
 
         <Link href="/cart">
-          <Indicator label={'0'}>
+          <Indicator label={totalQuantity}>
             <Card
               withBorder
               p={6}
