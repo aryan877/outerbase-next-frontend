@@ -1,6 +1,6 @@
 'use client';
 import { Category } from '@/types/types';
-import { Card, Group, Image, Stack, Text, useMantineTheme } from '@mantine/core';
+import { Card, Image, Stack, Text, Title, useMantineTheme } from '@mantine/core';
 import Link from 'next/link';
 import { trpc } from '../_trpc/client';
 
@@ -17,9 +17,9 @@ export default function FoodDeliveryPage() {
 
   return (
     <Stack>
-      <Text size="xl" fw={700}>
+      <Title order={3} fw={700}>
         Explore Our Delicious Food Categories
-      </Text>
+      </Title>
       <Stack>
         {isLoading ? (
           <div>Loading...</div>
@@ -35,24 +35,25 @@ export default function FoodDeliveryPage() {
                 p="lg"
                 // bg={theme.primaryColor}
                 shadow="xs"
-                radius="md"
+                radius="lg"
                 style={{
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                 }}
               >
-                <Group justify="space-between" w="100%">
+                <Stack justify="space-between" w="100%">
                   <Text size="lg" fw={700}>
                     {category.name}
                   </Text>
+                  <Text>{category.description}</Text>
                   <Image
                     style={{ height: '200px', width: '200px' }}
                     height={200}
                     width={200}
                     src={category.image}
                   ></Image>
-                </Group>
+                </Stack>
               </Card>
             </Link>
           ))

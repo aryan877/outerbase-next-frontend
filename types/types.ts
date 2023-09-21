@@ -3,6 +3,7 @@ export type Category = {
   name: string;
   categoryid: string;
   slug: string;
+  description: string;
 };
 
 export type FoodItem = {
@@ -20,4 +21,20 @@ export type CartItem = {
   itemid: string;
   userid: string;
   quantity: number;
+};
+
+export type Order = {
+  orderid?: number;
+  userid: string;
+  ordered_at?: string;
+  delivered_at?: string | null;
+  delivery_address: string;
+  payment_status?: boolean;
+  delivery_status?: 'Order Received' | 'Preparation Started' | 'On The Way' | 'Delivered';
+  total_price: number;
+  coupon_code?: string | null;
+  order_items: any[];
+  email: any;
+  phone_number: string;
+  intent_id?: string;
 };

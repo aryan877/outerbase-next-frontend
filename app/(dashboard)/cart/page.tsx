@@ -8,6 +8,7 @@ import { IconX } from '@tabler/icons-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { getQueryKey } from '@trpc/react-query';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 function CartPage() {
   const queryClient = useQueryClient();
@@ -18,10 +19,11 @@ function CartPage() {
     // staleTime: 10 * (60 * 1000), // 10 mins
     // cacheTime: 15 * (60 * 1000), // 15 mins
   });
-
+  const router = useRouter();
   const myCartItems: (CartItem & FoodItem)[] = cartItems;
 
   const modifyItemsInCartMutation = trpc.cart.modifyItemsInCart.useMutation();
+  const createOrderMutation = trpc.order.createOrder.useMutation();
 
   // Function to handle adding or modifying items in the cart
   const modifyCartItemsHandler = (id: number, quantity?: number) => {
@@ -73,7 +75,7 @@ function CartPage() {
     const subtotal = myCartItems.reduce((total, item) => total + item.quantity * item.price, 0);
 
     // Calculate the tax (15% of subtotal)
-    const tax = 0.15 * Number(subtotal);
+    const tax = (Number(process.env.NEXT_PUBLIC_CURRENCY) / 100) * Number(subtotal);
 
     // Calculate the total (subtotal + tax)
     const total = subtotal + tax;
@@ -118,6 +120,68 @@ function CartPage() {
       },
     });
   };
+
+  const handleCheckout = async () => {
+    try {
+      const orderCreationNotificationId = notifications.show({
+        loading: true,
+        title: 'Creating Order Record in Database',
+        message: 'Your order is being processed. Please wait...',
+        color: 'yellow',
+      });
+
+      createOrderMutation.mutate(
+        {
+          myCartItems,
+        },
+        {
+          onSuccess: (data: any) => {
+            notifications.update({
+              id: orderCreationNotificationId,
+              loading: false,
+              title: 'Redirecting to Payments Page',
+              message: 'Your order has been created and is now awaiting payment.',
+              autoClose: 2000,
+              color: 'yellow',
+            });
+            router.push(`/payment/${data.orderid}`);
+            // const getCartItemsQueryKey = getQueryKey(trpc.cart.getCartItems, undefined, 'query');
+            // const getCartItemsPopulatedQueryKey = getQueryKey(
+            //   trpc.cart.getCartItemsPopulated,
+            //   undefined,
+            //   'query'
+            // );
+            // queryClient.refetchQueries(getCartItemsPopulatedQueryKey);
+            // queryClient.refetchQueries(getCartItemsQueryKey);
+          },
+          onError: () => {
+            notifications.update({
+              id: orderCreationNotificationId,
+              loading: false,
+              title: 'Failed to Create Order',
+              message: 'There was an error while creating your order. Please try again later.',
+              autoClose: 2000,
+              color: 'red',
+            });
+          },
+        }
+      );
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  myCartItems.sort((a, b) => {
+    const nameA = a.name.toLowerCase();
+    const nameB = b.name.toLowerCase();
+    if (nameA < nameB) {
+      return -1;
+    }
+    if (nameA > nameB) {
+      return 1;
+    }
+    return 0;
+  });
 
   return (
     <Stack gap="lg">
@@ -198,7 +262,13 @@ function CartPage() {
                 </Table>
               </Stack>
               <Flex justify="end">
-                <Button size="large" variant="primary" style={{ width: 'fit-content' }}>
+                <Button
+                  size="large"
+                  variant="primary"
+                  style={{ width: 'fit-content' }}
+                  onClick={handleCheckout}
+                  disabled={createOrderMutation.isLoading}
+                >
                   Proceed to pay
                 </Button>
               </Flex>

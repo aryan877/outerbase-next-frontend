@@ -12,7 +12,7 @@ function FoodItemCard({ fooditem, cartItem, modifyCartItemsHandler }: FoodItemCa
   const quantity = cartItem ? cartItem.quantity : 0;
 
   return (
-    <Card withBorder shadow="xs" radius="md" style={{ cursor: 'pointer' }}>
+    <Card withBorder shadow="xs" radius="lg" style={{ cursor: 'pointer' }}>
       <Group gap="md" align="start">
         <Image
           height={200}

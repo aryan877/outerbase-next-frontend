@@ -3,7 +3,7 @@ import { createTRPCRouter, protectedProcedure } from '../trpc';
 export const categoryRouter = createTRPCRouter({
   listCategories: protectedProcedure.query(async () => {
     try {
-      const response = await fetch('https://zestful-tomato.cmd.outerbase.io/get-categories', {
+      const response = await fetch(`${process.env.OUTERBASE_COMMANDS_ROOT_DOMAIN}/get-categories`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -27,9 +27,10 @@ export const categoryRouter = createTRPCRouter({
     .query(async (opts) => {
       try {
         const slug = opts.input.slug;
-        const url = `https://zestful-tomato.cmd.outerbase.io/get-category-items?slug=${encodeURIComponent(
-          slug
-        )}`;
+        const url = `${
+          process.env.OUTERBASE_COMMANDS_ROOT_DOMAIN
+        }/get-category-items?slug=${encodeURIComponent(slug)}`;
+
         const response = await fetch(url, {
           method: 'GET',
           headers: {

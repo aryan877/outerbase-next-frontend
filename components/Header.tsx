@@ -5,9 +5,8 @@ import { UserButton } from '@clerk/nextjs';
 import { dark } from '@clerk/themes';
 import {
   Burger,
-  Card,
   Flex,
-  Indicator,
+  Group,
   MantineColorScheme,
   Select,
   Text,
@@ -45,7 +44,7 @@ function Header({ toggle, opened }: { toggle: () => void; opened: boolean }) {
   }, 0);
 
   return (
-    <Flex justify="space-between" h="100%" align="center" px="md">
+    <Flex justify="space-between" h="100%" align="center" p="md">
       <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
       <Flex justify="space-between" gap="md" align="center">
         <Text
@@ -81,19 +80,11 @@ function Header({ toggle, opened }: { toggle: () => void; opened: boolean }) {
           style={{ minWidth: 150 }}
         />
 
-        <Link href="/cart">
-          <Indicator label={totalQuantity}>
-            <Card
-              withBorder
-              p={6}
-              style={{ cursor: 'pointer' }}
-              // bg={computedColorScheme === 'dark' ? theme.colors.dark[4] : theme.primaryColor}
-              // size="xl"
-              aria-label="Cart icon"
-            >
-              <IconShoppingCart />
-            </Card>
-          </Indicator>
+        <Link href="/cart" style={{ textDecoration: 'none', color: 'inherit' }}>
+          <Group>
+            <IconShoppingCart />
+            <Text>Cart ({totalQuantity})</Text>
+          </Group>
         </Link>
         <UserButton afterSignOutUrl="/sign-in" appearance={appearance} />
       </Flex>

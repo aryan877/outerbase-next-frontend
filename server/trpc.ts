@@ -19,7 +19,6 @@
 import type { SignedInAuthObject, SignedOutAuthObject } from '@clerk/nextjs/api';
 import { getAuth } from '@clerk/nextjs/server';
 import { type CreateNextContextOptions } from '@trpc/server/adapters/next';
-import { z } from 'zod';
 
 interface AuthContext {
   auth: SignedInAuthObject | SignedOutAuthObject;

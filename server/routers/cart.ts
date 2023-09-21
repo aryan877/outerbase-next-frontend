@@ -18,13 +18,16 @@ export const cartRouter = createTRPCRouter({
         // Create a request body JSON object with itemid and quantity
         const requestBody = JSON.stringify({ itemid, quantity, userid });
 
-        const response = await fetch('https://zestful-tomato.cmd.outerbase.io/add-item-to-cart', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: requestBody,
-        });
+        const response = await fetch(
+          `${process.env.OUTERBASE_COMMANDS_ROOT_DOMAIN}/add-item-to-cart`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: requestBody,
+          }
+        );
 
         if (!response.ok) {
           throw new Error('Failed to modify items in cart');
@@ -41,9 +44,10 @@ export const cartRouter = createTRPCRouter({
   getCartItems: protectedProcedure.query(async (opts) => {
     try {
       const userid = opts.ctx.auth.userId;
-      const url = `https://zestful-tomato.cmd.outerbase.io/get-cart-items?userid=${encodeURIComponent(
-        userid
-      )}`;
+      const url = `${
+        process.env.OUTERBASE_COMMANDS_ROOT_DOMAIN
+      }/get-cart-items?userid=${encodeURIComponent(userid)}`;
+
       const response = await fetch(url, {
         method: 'GET',
         headers: {
@@ -54,7 +58,6 @@ export const cartRouter = createTRPCRouter({
         throw new Error('Failed to get cart items');
       }
       const data = await response.json();
-      console.log(data);
 
       return data;
     } catch (error) {
@@ -65,9 +68,9 @@ export const cartRouter = createTRPCRouter({
   getCartItemsPopulated: protectedProcedure.query(async (opts) => {
     try {
       const userid = opts.ctx.auth.userId;
-      const url = `https://zestful-tomato.cmd.outerbase.io/get-cart-items-populated?userid=${encodeURIComponent(
-        userid
-      )}`;
+      const url = `${
+        process.env.OUTERBASE_COMMANDS_ROOT_DOMAIN
+      }/get-cart-items-populated?userid=${encodeURIComponent(userid)}`;
       const response = await fetch(url, {
         method: 'GET',
         headers: {
@@ -78,7 +81,6 @@ export const cartRouter = createTRPCRouter({
         throw new Error('Failed to get cart items');
       }
       const data = await response.json();
-      console.log(data);
 
       return data;
     } catch (error) {

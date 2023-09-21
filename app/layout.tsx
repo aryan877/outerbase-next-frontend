@@ -12,6 +12,7 @@ import '@mantine/nprogress/styles.css';
 import React from 'react';
 import TRPCProvider from './_trpc/provider';
 import './styles/globals.css';
+
 export const metadata = {
   title: 'Ethereal Sync',
   description: 'Collboration Made easy for youtube creators',
