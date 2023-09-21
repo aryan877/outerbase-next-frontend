@@ -75,7 +75,7 @@ function CartPage() {
     const subtotal = myCartItems.reduce((total, item) => total + item.quantity * item.price, 0);
 
     // Calculate the tax (15% of subtotal)
-    const tax = (Number(process.env.NEXT_PUBLIC_CURRENCY) / 100) * Number(subtotal);
+    const tax = (Number(process.env.NEXT_PUBLIC_TAX_PERCENTAGE) / 100) * Number(subtotal);
 
     // Calculate the total (subtotal + tax)
     const total = subtotal + tax;
