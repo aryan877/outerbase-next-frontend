@@ -20,7 +20,7 @@ export const orderRouter = createTRPCRouter({
         }, 0);
 
         // Add tax (15%)
-        const tax = total_price * (Number(process.env.NEXT_PUBLIC_CURRENCY) / 100);
+        const tax = total_price * (Number(process.env.NEXT_PUBLIC_TAX_PERCENTAGE) / 100);
 
         const total_price_with_tax = total_price + tax;
 
