@@ -48,13 +48,23 @@ export const stripeRouter = createTRPCRouter({
           },
         });
 
-        //TBD
-        // await prisma.order.update({
-        //   where: {
-        //     id: orderId,
-        //   },
-        //   data: { intent_id: paymentIntent.id },
-        // });
+        // Create a request body JSON object
+        const requestBody = JSON.stringify({ orderid, intentid: paymentIntent.id });
+
+        const intentUpdationResponse = await fetch(
+          `${process.env.OUTERBASE_COMMANDS_ROOT_DOMAIN}/update-order-payment-intent`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: requestBody,
+          }
+        );
+
+        if (!intentUpdationResponse.ok) {
+          throw new Error('Failed to update intent order');
+        }
 
         return {
           clientSecret: paymentIntent.client_secret,

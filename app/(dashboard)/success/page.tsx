@@ -1,38 +1,33 @@
 'use client';
-import { useEffect } from 'react';
-import Confetti from 'react-dom-confetti';
+import { Center, Title } from '@mantine/core';
+import React, { useEffect } from 'react';
+import ConfettiExplosion from 'react-confetti-explosion';
 
 function Page() {
-  const confettiConfig = {
-    angle: 90,
-    spread: 360,
-    startVelocity: 40,
-    elementCount: 70,
-    dragFriction: 0.12,
-    duration: 3000,
-    stagger: 3,
-    width: '10px',
-    height: '10px',
-    colors: ['#ff0000', '#00ff00', '#0000ff'], // Customize the confetti colors
-  };
+  const [isExploding, setIsExploding] = React.useState(false);
 
-  // Set a timer to trigger confetti after a delay
   useEffect(() => {
-    const confettiTimer = setTimeout(() => {
-      // You can trigger the confetti animation here
-      clearTimeout(confettiTimer);
-    }, 1000); // Delay in milliseconds before confetti starts
+    // Trigger the explosion animation on initial load
+    setIsExploding(true);
 
-    // Cleanup the timer on unmount
-    return () => clearTimeout(confettiTimer);
+    // Set a timeout to stop the animation after 3 seconds (adjust as needed)
+    const explosionTimeout = setTimeout(() => {
+      setIsExploding(false);
+    }, 3000);
+
+    // Cleanup the timeout if the component unmounts
+    return () => clearTimeout(explosionTimeout);
   }, []);
 
   return (
-    <div>
-      <h1>Success!!</h1>
-      {/* Add Confetti component */}
-      <Confetti active={true} config={confettiConfig} />
-    </div>
+    <>
+      {isExploding && (
+        <Center>
+          <ConfettiExplosion />
+        </Center>
+      )}
+      <Title order={3}>Order Placed Successfully</Title>
+    </>
   );
 }
 

@@ -36,5 +36,5 @@ export type Order = {
   order_items: any[];
   email: any;
   phone_number: string;
-  intent_id?: string;
+  intentid?: string;
 };

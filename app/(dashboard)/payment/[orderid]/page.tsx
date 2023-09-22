@@ -1,7 +1,10 @@
 'use client';
 import { trpc } from '@/app/_trpc/client';
+import { Order } from '@/types/types';
+import { Text } from '@mantine/core';
 import { Elements } from '@stripe/react-stripe-js';
 import { StripeElementsOptions, loadStripe } from '@stripe/stripe-js';
+import Link from 'next/link';
 import { useState } from 'react';
 import PaymentForm from '../components/PaymentForm';
 
@@ -17,11 +20,25 @@ const PayPage = ({ params }: { params: { orderid: string } }) => {
       orderid: orderid,
     },
     {
+      staleTime: Infinity,
       onSuccess: (data) => {
         setClientSecret(data.clientSecret as string);
       },
     }
   );
+
+  const {
+    data: { response: { items: orderItems } = { items: [] } } = {},
+    isLoading: isLoadingOrderItem,
+  } = trpc.order.getOrderById.useQuery(
+    { orderid: orderid },
+    {
+      // staleTime: 10 * (60 * 1000), // 10 mins
+      // cacheTime: 15 * (60 * 1000), // 15 mins
+    }
+  );
+
+  const orderItem = orderItems[0] as Order;
 
   const options: StripeElementsOptions = {
     clientSecret,
@@ -30,11 +47,18 @@ const PayPage = ({ params }: { params: { orderid: string } }) => {
     },
   };
 
-  return isLoading ? (
+  return isLoading || !clientSecret ? (
     <div>Loading...</div>
   ) : (
     <div>
-      {clientSecret && (
+      {orderItem.payment_status ? (
+        // Order has already been paid
+        <div>
+          <Text>This order has already been paid.</Text>
+          <Link href="/orders">Go to Orders</Link>
+        </div>
+      ) : (
+        // Display payment form
         <Elements options={options} stripe={stripePromise}>
           <PaymentForm orderid={orderid} />
         </Elements>

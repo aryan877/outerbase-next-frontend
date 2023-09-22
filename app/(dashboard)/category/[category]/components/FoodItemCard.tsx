@@ -28,6 +28,7 @@ function FoodItemCard({ fooditem, cartItem, modifyCartItemsHandler }: FoodItemCa
           <Text size="md">${fooditem.price}</Text>
           {quantity === 0 ? (
             <Button
+              w={200}
               onClick={() => {
                 modifyCartItemsHandler(Number(fooditem.itemid), 1);
               }}

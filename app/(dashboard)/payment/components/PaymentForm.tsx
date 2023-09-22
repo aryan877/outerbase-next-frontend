@@ -1,4 +1,4 @@
-import { Loader, Title, useComputedColorScheme } from '@mantine/core';
+import { Card, Loader, Stack, Title, useComputedColorScheme } from '@mantine/core';
 import {
   LinkAuthenticationElement,
   PaymentElement,
@@ -66,9 +66,11 @@ const PaymentForm = ({ orderid }: { orderid: string }) => {
     setIsLoading(true);
 
     const isDev = process.env.NODE_ENV === 'development';
+
+    // Redirect to the success URL with the hash parameter
     const successUrl = isDev
-      ? 'http://localhost:3000/success'
-      : `${process.env.NEXT_PUBLIC_DOMAIN}/success`;
+      ? `http://localhost:3000/order/${orderid}#success`
+      : `${process.env.NEXT_PUBLIC_DOMAIN}/order/${orderid}#success`;
 
     const { error } = await stripe.confirmPayment({
       elements,
@@ -92,30 +94,25 @@ const PaymentForm = ({ orderid }: { orderid: string }) => {
   };
 
   return (
-    <>
-      <form
-        id="payment-form"
-        onSubmit={handleSubmit}
-        className={`min-h-[calc(100vh-6rem)] md:min-h-[calc(100vh-15rem)] p-4 lg:px-20 xl:px-40 flex flex-col gap-8 ${
-          computedColorScheme === 'dark' ? 'text-gray-300' : '' // Apply dark mode text color
-        }`}
-      >
-        <Title order={3}>Secure Payment - Order ID: {orderid}</Title>
-        <LinkAuthenticationElement id="link-authentication-element" />
-        <PaymentElement
-          id="payment-element"
-          options={{
-            layout: 'tabs',
-          }}
-        />
-        <button disabled={isLoading || !stripe || !elements} id="submit" className="p-4">
-          <span id="button-text">{isLoading ? <Loader size="sm" /> : 'Pay now'}</span>
-        </button>
-
+    <Card withBorder p="lg">
+      <form id="payment-form" onSubmit={handleSubmit}>
+        <Stack gap="lg">
+          <Title order={4}>Payment - Order ID: {orderid}</Title>
+          <LinkAuthenticationElement id="link-authentication-element" />
+          <PaymentElement
+            id="payment-element"
+            options={{
+              layout: 'tabs',
+            }}
+          />
+          <button disabled={isLoading || !stripe || !elements} id="submit" className="p-4">
+            <span id="button-text">{isLoading ? <Loader size="sm" /> : 'Pay now'}</span>
+          </button>
+        </Stack>
         {/* Show any error or success messages */}
         {message && <div id="payment-message">{message}</div>}
       </form>
-    </>
+    </Card>
   );
 };
 
