@@ -39,3 +39,19 @@ export type Order = {
   phone_number: string;
   intentid?: string;
 };
+
+export type Address = {
+  addressid: number;
+  userid: number;
+  street: string;
+  google_formatted_address: string | null;
+  flat_number: string;
+  landmark?: string | null;
+  state: string;
+  pincode: string;
+  phone_number: string;
+  longitude: number;
+  latitude: number;
+  created_at: Date;
+  updated_at: Date;
+};

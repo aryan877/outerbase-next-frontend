@@ -7,6 +7,7 @@ import { modals } from '@mantine/modals';
 import { notifications } from '@mantine/notifications';
 import { IconArrowLeft } from '@tabler/icons-react';
 import { useQueryClient } from '@tanstack/react-query';
+import { getQueryKey } from '@trpc/react-query';
 import { useEffect, useState } from 'react';
 import GoogleMapView from './GoogleMapView';
 
@@ -81,14 +82,12 @@ export function AddAddressForm() {
             autoClose: 2000,
             color: 'green',
           });
-          // const getCartItemsQueryKey = getQueryKey(trpc.cart.getCartItems, undefined, 'query');
-          // const getCartItemsPopulatedQueryKey = getQueryKey(
-          //   trpc.cart.getCartItemsPopulated,
-          //   undefined,
-          //   'query'
-          // );
-          // queryClient.refetchQueries(getCartItemsPopulatedQueryKey);
-          // queryClient.refetchQueries(getCartItemsQueryKey);
+          const getUserAddressesQueryKey = getQueryKey(
+            trpc.address.getUserAddresses,
+            undefined,
+            'query'
+          );
+          queryClient.refetchQueries(getUserAddressesQueryKey);
         },
         onError: () => {
           notifications.update({

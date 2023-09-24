@@ -72,7 +72,7 @@ function GoogleMapView({ nextStep }: { nextStep: () => void }) {
           </Autocomplete>
 
           {loading ? (
-            <div>Loading...</div>
+            <div>Locating user...</div>
           ) : (
             <div>
               <GoogleMap

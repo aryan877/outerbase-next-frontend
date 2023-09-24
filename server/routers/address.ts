@@ -72,7 +72,7 @@ export const addressRouter = createTRPCRouter({
       const userid = opts.ctx.auth.userId;
       const url = `${
         process.env.OUTERBASE_COMMANDS_ROOT_DOMAIN
-      }/get-orders-list?userid=${encodeURIComponent(userid)}`;
+      }/get-addresses-list?userid=${encodeURIComponent(userid)}`;
 
       const response = await fetch(url, {
         method: 'GET',
@@ -92,12 +92,12 @@ export const addressRouter = createTRPCRouter({
     }
   }),
   getUserAddressById: protectedProcedure
-    .input(z.object({ orderid: z.string() }))
+    .input(z.object({ addressid: z.string() }))
     .query(async (opts) => {
       try {
         const url = `${
           process.env.OUTERBASE_COMMANDS_ROOT_DOMAIN
-        }/get-order-by-id?orderid=${encodeURIComponent(opts.input.orderid)}`;
+        }/get-address-by-id?orderid=${encodeURIComponent(opts.input.addressid)}`;
 
         const response = await fetch(url, {
           method: 'GET',
