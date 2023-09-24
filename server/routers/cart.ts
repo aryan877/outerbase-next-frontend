@@ -61,7 +61,7 @@ export const cartRouter = createTRPCRouter({
 
       return data;
     } catch (error) {
-      console.error('Error geting cart items:', error);
+      console.error('Error getting cart items:', error);
       throw new Error('Failed to get cart items');
     }
   }),
@@ -84,7 +84,7 @@ export const cartRouter = createTRPCRouter({
 
       return data;
     } catch (error) {
-      console.error('Error geting cart items:', error);
+      console.error('Error getting cart items:', error);
       throw new Error('Failed to get cart items');
     }
   }),

@@ -54,7 +54,7 @@ function Header({ toggle, opened }: { toggle: () => void; opened: boolean }) {
           fz="xl"
           fw={700}
         >
-          Bloomfoods
+          Bloom
         </Text>
       </Flex>
       <Flex

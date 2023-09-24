@@ -113,7 +113,7 @@ function Page({ params }: { params: { orderid: string } }) {
                   {orderItem.ordered_at && (
                     <>
                       <strong>Ordered At:</strong>{' '}
-                      {dayjs(orderItem.ordered_at).format('D MMM YYYY, h:mm a')}
+                      {dayjs(orderItem?.ordered_at).format('D MMM YYYY, h:mm a')}
                     </>
                   )}
                 </Text>
@@ -200,7 +200,7 @@ function Page({ params }: { params: { orderid: string } }) {
                       </Table.Tr>
                     </Table.Thead>
                     <Table.Tbody>
-                      {orderItem.order_items.map((_, index) => (
+                      {orderItem?.order_items?.map((_, index) => (
                         <Table.Tr key={index}>
                           <Table.Td>{_.name}</Table.Td>
                           <Table.Td>${_.price}</Table.Td>

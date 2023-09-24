@@ -204,8 +204,9 @@ function CartPage() {
                   <Table.Tr>
                     <Table.Th>Item</Table.Th>
                     <Table.Th>Quantity</Table.Th>
-                    <Table.Th>Price</Table.Th>
                     <Table.Th>Actions</Table.Th>
+                    <Table.Th>Price</Table.Th>
+                    <Table.Th>Total</Table.Th>
                   </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
@@ -227,7 +228,6 @@ function CartPage() {
                           }}
                         />
                       </Table.Td>
-                      <Table.Td>${fooditem.price}</Table.Td>
                       <Table.Td>
                         <Tooltip label="Remove item" position="top">
                           <Button
@@ -238,28 +238,44 @@ function CartPage() {
                           </Button>
                         </Tooltip>
                       </Table.Td>
+                      <Table.Td>${fooditem.price}</Table.Td>
+                      <Table.Td>${(fooditem.price * fooditem.quantity).toFixed(2)} </Table.Td>
                     </Table.Tr>
                   ))}
+                  <Table.Tr>
+                    <Table.Td colSpan={4}>
+                      <Text fw="bold">Subtotal:</Text>
+                    </Table.Td>
+                    <Table.Td>
+                      <Text fw="bold">${totals.subtotal.toFixed(2)}</Text>
+                    </Table.Td>
+                  </Table.Tr>
+                  <Table.Tr>
+                    <Table.Td colSpan={4}>
+                      <Text fw="bold">Tax (15%):</Text>
+                    </Table.Td>
+                    <Table.Td>
+                      <Text fw="bold">${totals.tax.toFixed(2)}</Text>
+                    </Table.Td>
+                  </Table.Tr>
+                  <Table.Tr>
+                    <Table.Td colSpan={4}>
+                      <Text fw="bold">Total:</Text>
+                    </Table.Td>
+                    <Table.Td>
+                      <Text fw="bold">${totals.total.toFixed(2)}</Text>
+                    </Table.Td>
+                  </Table.Tr>
                 </Table.Tbody>
               </Table>{' '}
               <Stack>
-                <Title order={3}>Your Total</Title>
-                <Table striped>
+                {/* <Title order={3}>Your Total</Title> */}
+                {/* <Table striped>
                   <Table.Tbody>
-                    <Table.Tr>
-                      <Table.Td>Subtotal:</Table.Td>
-                      <Table.Td>${totals.subtotal.toFixed(2)}</Table.Td>
-                    </Table.Tr>
-                    <Table.Tr>
-                      <Table.Td>Tax (15%):</Table.Td>
-                      <Table.Td>${totals.tax.toFixed(2)}</Table.Td>
-                    </Table.Tr>
-                    <Table.Tr>
-                      <Table.Td>Total:</Table.Td>
-                      <Table.Td>${totals.total.toFixed(2)}</Table.Td>
-                    </Table.Tr>
+                  
                   </Table.Tbody>
                 </Table>
+              </Stack> */}
               </Stack>
               <Flex justify="end">
                 <Button

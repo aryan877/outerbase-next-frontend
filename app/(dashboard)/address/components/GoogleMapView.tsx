@@ -1,24 +1,58 @@
+'use client';
 import useLocationStore from '@/store/LocationStore';
-import { Input, Stack } from '@mantine/core';
+import { Button, Input, Stack, Text } from '@mantine/core';
 import { Autocomplete, GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-function GoogleMapView() {
+function GoogleMapView({ nextStep }: { nextStep: () => void }) {
   const containerStyle = {
     width: '100%',
-    height: '50vh', // Increased height for a better view
+    height: '50vh',
   };
 
-  const { getLocation, latitude, longitude, error } = useLocationStore();
+  const inputRef = useRef<google.maps.places.Autocomplete | null>(null);
+  const { latitude, longitude, error, setLocation, address } = useLocationStore();
+  const [markerPosition, setMarkerPosition] = useState({
+    lat: latitude,
+    lng: longitude,
+  });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getLocation();
-  }, []);
+    setMarkerPosition({
+      lat: latitude as number,
+      lng: longitude as number,
+    });
 
-  // Convert user's location into LatLngLiteral format
-  const userLocation = {
-    lat: latitude as number,
-    lng: longitude as number,
+    if (latitude !== 0 && longitude !== 0) {
+      setLoading(false);
+    }
+  }, [latitude, longitude]);
+
+  const handlePlaceChanged = () => {
+    const place = inputRef.current?.getPlace();
+    if (place) {
+      setLocation(
+        place.geometry?.location?.lat() as number,
+        place.geometry?.location?.lng() as number,
+        place.formatted_address as string
+      );
+    }
+  };
+
+  const handleMarkerDragEnd = (event: google.maps.MapMouseEvent) => {
+    const newLat = event?.latLng?.lat();
+    const newLng = event?.latLng?.lng();
+
+    const geocoder = new google.maps.Geocoder();
+    geocoder.geocode(
+      { location: { lat: newLat as number, lng: newLng as number } },
+      (results, status) => {
+        if (status === 'OK' && results && results[0]) {
+          setLocation(newLat as number, newLng as number, results[0].formatted_address);
+        }
+      }
+    );
   };
 
   return (
@@ -28,26 +62,48 @@ function GoogleMapView() {
         googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string}
       >
         <Stack gap="md">
-          <Autocomplete>
-            <Input.Wrapper label="Search address" required>
-              <Input type="text" placeholder="Search Address" />
+          <Autocomplete
+            onLoad={(ref) => (inputRef.current = ref)}
+            onPlaceChanged={handlePlaceChanged}
+          >
+            <Input.Wrapper label="Search location">
+              <Input type="text" placeholder="Search Location" />
             </Input.Wrapper>
           </Autocomplete>
 
-          <div>
-            <GoogleMap
-              options={{
-                fullscreenControl: false,
-                streetViewControl: false,
-                mapTypeControl: false,
-              }}
-              center={userLocation}
-              zoom={16}
-              mapContainerStyle={containerStyle}
-            >
-              <Marker position={userLocation} title="Your Location" />
-            </GoogleMap>
-          </div>
+          {loading ? (
+            <div>Loading...</div>
+          ) : (
+            <div>
+              <GoogleMap
+                options={{
+                  fullscreenControl: false,
+                  streetViewControl: false,
+                  mapTypeControl: false,
+                }}
+                center={markerPosition}
+                zoom={16}
+                mapContainerStyle={containerStyle}
+              >
+                <Marker
+                  position={markerPosition}
+                  title="Your Location"
+                  draggable={true}
+                  onDragEnd={handleMarkerDragEnd}
+                />
+              </GoogleMap>
+              <Stack mt="md">
+                <Text>{address}</Text>
+                <Button
+                  onClick={() => {
+                    nextStep();
+                  }}
+                >
+                  Confirm Location
+                </Button>
+              </Stack>
+            </div>
+          )}
         </Stack>
       </LoadScript>
     </div>

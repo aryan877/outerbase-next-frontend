@@ -4,9 +4,12 @@ import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 
 const webhookSecret = process.env.STRIPE_MARK_PAID_WEBHOOK_KEY;
+const mailgundomain = process.env.MAILGUN_DOMAIN;
+const mailgunapikey = process.env.MAILGUN_API_KEY;
+const restaurantname = process.env.RESTAURANT_NAME;
+const fromemail = process.env.FROM_EMAIL;
 
 export async function POST(req: Request, res: NextResponse) {
-  console.log(req.url);
   const body = await req.text();
   const signature = headers().get('Stripe-Signature') as string;
 
@@ -19,10 +22,18 @@ export async function POST(req: Request, res: NextResponse) {
       const intentid = intent.id;
 
       //outerbase command temp
-      const requestBody = JSON.stringify({ intentid });
+      const requestBody = JSON.stringify({
+        intentid,
+        mailgundomain,
+        mailgunapikey,
+        restaurantname,
+        fromemail,
+        fname: 'aryan',
+        email: 'aryankumar877@gmail.com',
+      });
 
       const paymentUpdationResponse = await fetch(
-        `${process.env.OUTERBASE_COMMANDS_ROOT_DOMAIN}/update-order-payment-status`,
+        `${process.env.OUTERBASE_COMMANDS_ROOT_DOMAIN}/update-order-status-and-notify`,
         {
           method: 'POST',
           headers: {

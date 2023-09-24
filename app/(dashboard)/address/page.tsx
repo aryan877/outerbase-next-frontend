@@ -31,7 +31,7 @@ function Address() {
         <Title order={3} fw={700} mb="md">
           Your Addresses
         </Title>
-        <Card p="md" shadow="xs"                 radius="lg">
+        <Card p="md" shadow="xs" radius="lg">
           <Stack gap="md" mb="md">
             <Button
               size="sm"
@@ -39,11 +39,7 @@ function Address() {
               onClick={() => {
                 modals.open({
                   title: 'Add Address',
-                  children: (
-                    <>
-                      <AddAddressForm />
-                    </>
-                  ),
+                  children: <AddAddressForm />,
                 });
               }}
             >

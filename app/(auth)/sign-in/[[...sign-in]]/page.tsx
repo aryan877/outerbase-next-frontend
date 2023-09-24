@@ -12,7 +12,7 @@ export default function Page() {
   return (
     <Stack>
       <Text size="xl" variant="gradient" gradient={{ from: 'primary.6', to: 'primary.3', deg: 45 }}>
-        Sign in to Bloomfoods
+        Sign in to Bloom
       </Text>
       <SignIn appearance={appearance} />
     </Stack>

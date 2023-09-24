@@ -1,4 +1,5 @@
 import { Order } from '@/types/types';
+import { capitalizeFirstLetter } from '@/utils/strings';
 import { clerkClient } from '@clerk/nextjs';
 import z from 'zod';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
@@ -27,24 +28,28 @@ export const orderRouter = createTRPCRouter({
         const orderItemsString = opts.input.myCartItems.map((item) => JSON.stringify(item));
 
         const order: Order = {
-          userid: opts.ctx.auth.userId,
-          email: user.emailAddresses[0]?.emailAddress as string,
+          userid: user.id,
           delivery_address: '123 Main Street, City, Country',
-          order_items: orderItemsString,
           total_price: total_price_with_tax.toFixed(2),
+          email: user.emailAddresses[0]?.emailAddress as string,
           phone_number: '7983060620',
+          first_name: capitalizeFirstLetter(user.firstName as string) as string,
+          order_items: orderItemsString,
         };
 
         // Create a request body JSON object
         const requestBody = JSON.stringify(order);
 
-        const response = await fetch(`${process.env.OUTERBASE_COMMANDS_ROOT_DOMAIN}/create-order`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: requestBody,
-        });
+        const response = await fetch(
+          `${process.env.OUTERBASE_COMMANDS_ROOT_DOMAIN}/create-order-entry`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: requestBody,
+          }
+        );
 
         if (!response.ok) {
           throw new Error('Failed to create order');
@@ -78,7 +83,7 @@ export const orderRouter = createTRPCRouter({
 
       return data;
     } catch (error) {
-      console.error('Error geting list of orders:', error);
+      console.error('Error getting list of orders:', error);
       throw new Error('Failed to get list of orders');
     }
   }),
@@ -101,7 +106,7 @@ export const orderRouter = createTRPCRouter({
 
       return data;
     } catch (error) {
-      console.error('Error geting order by id:', error);
+      console.error('Error getting order by id:', error);
       throw new Error('Failed to get order by id');
     }
   }),

@@ -1,3 +1,7 @@
 export function formatCategoryName(category: string) {
   return category.replace(/-/g, ' ').replace(/\b\w/g, (match) => match.toUpperCase());
 }
+
+export function capitalizeFirstLetter(str: string) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}

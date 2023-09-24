@@ -23,6 +23,8 @@ function Orders() {
     <Stack gap="md">
       {isLoadingOrderItems ? (
         <div>Loading...</div>
+      ) : orderItems.length === 0 ? (
+        <Text>You have not placed any orders</Text>
       ) : (
         <>
           <Title order={3} fw={700}>
@@ -30,15 +32,15 @@ function Orders() {
           </Title>
           <Stack gap="md">
             {myOrderItems.map((order) => (
-              <Card key={order.orderid} padding="lg" withBorder radius="lg">
+              <Card key={order?.orderid} padding="lg" withBorder radius="lg">
                 <Stack>
                   <Text size="xl" fw={700}>
                     Order #{order.orderid}
                   </Text>
-                  <Text>Order Date: {dayjs(order.ordered_at).format('D MMM YYYY, h:mm a')}</Text>
-                  <Text>Delivery Status: {order.delivery_status}</Text>
-                  <Text>Total: ${order.total_price}</Text>
-                  <Link href={`/order/${order.orderid}`}>
+                  <Text>Order Date: {dayjs(order?.ordered_at).format('D MMM YYYY, h:mm a')}</Text>
+                  <Text>Delivery Status: {order?.delivery_status}</Text>
+                  <Text>Total: ${order?.total_price}</Text>
+                  <Link href={`/order/${order?.orderid}`}>
                     <Button>See More</Button>
                   </Link>
                 </Stack>

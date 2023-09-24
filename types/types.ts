@@ -26,6 +26,7 @@ export type CartItem = {
 export type Order = {
   orderid?: number;
   userid: string;
+  first_name: string;
   ordered_at?: string;
   delivered_at?: string | null;
   delivery_address: string;

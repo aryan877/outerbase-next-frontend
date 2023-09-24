@@ -1,8 +1,22 @@
-import { Box } from '@mantine/core';
+'use client';
+import { trpc } from '@/app/_trpc/client';
+import useLocationStore from '@/store/LocationStore';
+import { Box, Button, Stack, Text, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
+import { modals } from '@mantine/modals';
+import { notifications } from '@mantine/notifications';
+import { IconArrowLeft } from '@tabler/icons-react';
+import { useQueryClient } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
 import GoogleMapView from './GoogleMapView';
 
 export function AddAddressForm() {
+  const [active, setActive] = useState(0);
+  const nextStep = () => setActive((current) => (current < 2 ? current + 1 : current));
+  const prevStep = () => setActive((current) => (current > 0 ? current - 1 : current));
+  const { setAddress, getLocation, address, latitude, longitude } = useLocationStore();
+  const queryClient = useQueryClient();
+
   const form = useForm({
     initialValues: {
       flatNumber: '',
@@ -10,6 +24,7 @@ export function AddAddressForm() {
       state: '',
       pincode: '',
       phoneNumber: '',
+      landmark: '',
     },
 
     validate: {
@@ -24,102 +39,156 @@ export function AddAddressForm() {
     },
   });
 
-  // const modifyItemsInCartMutation = trpc.address..useMutation();
-  // const createOrderMutation = trpc.order.createOrder.useMutation();
+  const addUserAddressMutation = trpc.address.addUserAddress.useMutation();
 
-  // Function to handle adding or modifying items in the cart
-  // const modifyCartItemsHandler = (id: number, quantity?: number) => {
-  //   const modifyingCartNotificationId = notifications.show({
-  //     loading: true,
-  //     title: 'Modifying Item in Cart',
-  //     message: 'The selected item is being modified in your cart.',
-  //     color: 'yellow',
-  //   });
+  const addUserAddressHandler = (
+    flatNumber: string,
+    landmark: string,
+    phoneNumber: string,
+    pincode: string,
+    state: string,
+    street: string,
+    latitude: number,
+    longitude: number,
+    googleAddress: string
+  ) => {
+    const addingUserAddressNotificationId = notifications.show({
+      loading: true,
+      title: 'Adding New Address',
+      message: 'Adding a new address for the user.',
+      color: 'yellow',
+    });
 
-  //   modifyItemsInCartMutation.mutate(
-  //     { itemid: id, quantity: Number(quantity) },
-  //     {
-  //       onSuccess: () => {
-  //         notifications.update({
-  //           id: modifyingCartNotificationId,
-  //           loading: false,
-  //           title: 'Item Modified in Cart',
-  //           message: 'The selected item has been modified in your cart.',
-  //           autoClose: 2000,
-  //           color: 'green',
-  //         });
-  //         const getCartItemsQueryKey = getQueryKey(trpc.cart.getCartItems, undefined, 'query');
-  //         const getCartItemsPopulatedQueryKey = getQueryKey(
-  //           trpc.cart.getCartItemsPopulated,
-  //           undefined,
-  //           'query'
-  //         );
-  //         queryClient.refetchQueries(getCartItemsPopulatedQueryKey);
-  //         queryClient.refetchQueries(getCartItemsQueryKey);
-  //       },
-  //       onError: () => {
-  //         notifications.update({
-  //           id: modifyingCartNotificationId,
-  //           loading: false,
-  //           title: 'Failed to Modify Item in Cart',
-  //           message:
-  //             'An error occurred while modifying the item in your cart. Please try again later.',
-  //           autoClose: 2000,
-  //           color: 'red',
-  //         });
-  //       },
-  //     }
-  //   );
-  // };
+    addUserAddressMutation.mutate(
+      {
+        flatNumber,
+        landmark,
+        phoneNumber,
+        pincode,
+        state,
+        street,
+        latitude,
+        longitude,
+        googleAddress,
+      },
+      {
+        onSuccess: () => {
+          notifications.update({
+            id: addingUserAddressNotificationId,
+            loading: false,
+            title: 'Address Added Successfully',
+            message: 'A new address has been added for the user.',
+            autoClose: 2000,
+            color: 'green',
+          });
+          // const getCartItemsQueryKey = getQueryKey(trpc.cart.getCartItems, undefined, 'query');
+          // const getCartItemsPopulatedQueryKey = getQueryKey(
+          //   trpc.cart.getCartItemsPopulated,
+          //   undefined,
+          //   'query'
+          // );
+          // queryClient.refetchQueries(getCartItemsPopulatedQueryKey);
+          // queryClient.refetchQueries(getCartItemsQueryKey);
+        },
+        onError: () => {
+          notifications.update({
+            id: addingUserAddressNotificationId,
+            loading: false,
+            title: 'Failed to Add Address',
+            message:
+              'An error occurred while adding a new address for the user. Please try again later.',
+            autoClose: 2000,
+            color: 'red',
+          });
+        },
+        onSettled: () => {
+          modals.closeAll();
+        },
+      }
+    );
+  };
+
+  useEffect(() => {
+    getLocation();
+    return () => {
+      setAddress(null);
+    };
+  }, []);
 
   return (
-    <Box mx="auto">
-      <div style={{ marginTop: '20px' }}>
-        <GoogleMapView />
-      </div>
-      {/* <form onSubmit={form.onSubmit((values) => console.log(values))}>
-        <Stack gap="md" justify="between">
-          <TextInput
-            withAsterisk
-            label="Flat Number"
-            placeholder="Enter flat number"
-            {...form.getInputProps('flatNumber')}
-          />
-
-          <TextInput
-            withAsterisk
-            label="Street"
-            placeholder="Enter street address"
-            {...form.getInputProps('street')}
-          />
-
-          <TextInput
-            withAsterisk
-            label="State"
-            placeholder="Enter state"
-            {...form.getInputProps('state')}
-          />
-
-          <TextInput
-            withAsterisk
-            label="Pincode"
-            placeholder="Enter pincode"
-            {...form.getInputProps('pincode')}
-          />
-
-          <TextInput
-            withAsterisk
-            label="Phone Number"
-            placeholder="e.g., +919876543210"
-            {...form.getInputProps('phoneNumber')}
-          />
-        </Stack>
-        <Box mt="md">
-          <Button type="submit" fullWidth>
-            Submit
+    <>
+      {active === 0 && <GoogleMapView nextStep={nextStep} />}
+      {active === 1 && (
+        <Stack>
+          <Text>{address}</Text>
+          <Button w="fit-content" onClick={prevStep}>
+            {' '}
+            <IconArrowLeft size={24} />
           </Button>
-        </Box>
-      </form> */}
-    </Box>
+          <form
+            onSubmit={form.onSubmit((values) =>
+              addUserAddressHandler(
+                values.flatNumber,
+                values.landmark,
+                values.phoneNumber,
+                values.pincode,
+                values.state,
+                values.street,
+                latitude as number,
+                longitude as number,
+                address as string
+              )
+            )}
+          >
+            <Stack gap="md" justify="between">
+              <TextInput
+                withAsterisk
+                label="Flat Number"
+                placeholder="Enter flat number"
+                {...form.getInputProps('flatNumber')}
+              />
+
+              <TextInput
+                withAsterisk
+                label="Street"
+                placeholder="Enter street address"
+                {...form.getInputProps('street')}
+              />
+
+              <TextInput
+                withAsterisk
+                label="State"
+                placeholder="Enter state"
+                {...form.getInputProps('state')}
+              />
+
+              <TextInput
+                withAsterisk
+                label="Pincode"
+                placeholder="Enter pincode"
+                {...form.getInputProps('pincode')}
+              />
+
+              <TextInput
+                withAsterisk
+                label="Phone Number"
+                placeholder="e.g., +919876543210"
+                {...form.getInputProps('phoneNumber')}
+              />
+              <TextInput
+                label="Landmark"
+                placeholder="Landmark"
+                {...form.getInputProps('landmark')}
+              />
+            </Stack>
+            <Box mt="md">
+              <Button type="submit" fullWidth>
+                Submit
+              </Button>
+            </Box>
+          </form>
+        </Stack>
+      )}
+    </>
   );
 }
