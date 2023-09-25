@@ -22,22 +22,28 @@ export type CartItem = {
   userid: string;
   quantity: number;
 };
-
 export type Order = {
   orderid?: number;
   userid: string;
-  first_name: string;
   ordered_at?: string;
   delivered_at?: string | null;
-  delivery_address: string;
   payment_status?: boolean;
   delivery_status?: 'Order Received' | 'Preparation Started' | 'On The Way' | 'Delivered';
   total_price: number;
   coupon_code?: string | null;
   order_items: any[];
-  email: any;
+  email: string;
   phone_number: string;
-  intentid?: string;
+  intentid?: string | null;
+  google_formatted_address: string;
+  flat_number: string;
+  street: string;
+  state: string;
+  pincode: string;
+  latitude: number;
+  longitude: number;
+  landmark: string;
+  first_name: string;
 };
 
 export type Address = {

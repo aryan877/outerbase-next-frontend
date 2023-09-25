@@ -23,7 +23,6 @@ function CartPage() {
   const myCartItems: (CartItem & FoodItem)[] = cartItems;
 
   const modifyItemsInCartMutation = trpc.cart.modifyItemsInCart.useMutation();
-  const createOrderMutation = trpc.order.createOrder.useMutation();
 
   // Function to handle adding or modifying items in the cart
   const modifyCartItemsHandler = (id: number, quantity?: number) => {
@@ -121,56 +120,6 @@ function CartPage() {
     });
   };
 
-  const handleCheckout = async () => {
-    try {
-      const orderCreationNotificationId = notifications.show({
-        loading: true,
-        title: 'Creating Order Record in Database',
-        message: 'Your order is being processed. Please wait...',
-        color: 'yellow',
-      });
-
-      createOrderMutation.mutate(
-        {
-          myCartItems,
-        },
-        {
-          onSuccess: (data: any) => {
-            notifications.update({
-              id: orderCreationNotificationId,
-              loading: false,
-              title: 'Redirecting to Payments Page',
-              message: 'Your order has been created and is now awaiting payment.',
-              autoClose: 2000,
-              color: 'yellow',
-            });
-            router.push(`/payment/${data.orderid}`);
-            // const getCartItemsQueryKey = getQueryKey(trpc.cart.getCartItems, undefined, 'query');
-            // const getCartItemsPopulatedQueryKey = getQueryKey(
-            //   trpc.cart.getCartItemsPopulated,
-            //   undefined,
-            //   'query'
-            // );
-            // queryClient.refetchQueries(getCartItemsPopulatedQueryKey);
-            // queryClient.refetchQueries(getCartItemsQueryKey);
-          },
-          onError: () => {
-            notifications.update({
-              id: orderCreationNotificationId,
-              loading: false,
-              title: 'Failed to Create Order',
-              message: 'There was an error while creating your order. Please try again later.',
-              autoClose: 2000,
-              color: 'red',
-            });
-          },
-        }
-      );
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
   myCartItems.sort((a, b) => {
     const nameA = a.name.toLowerCase();
     const nameB = b.name.toLowerCase();
@@ -184,115 +133,123 @@ function CartPage() {
   });
 
   return (
-    <Stack gap="lg">
-      {isLoadingCartItems ? (
-        <div>Loading...</div>
-      ) : (
-        <Stack>
-          <Title order={3}>Your Cart ({cartItems.length})</Title>
-          {cartItems.length === 0 ? (
-            <Stack gap="md" align="center">
-              Your cart is empty!
-              <Link href="/">
-                <Button variant="primary">Fill It Up</Button>
-              </Link>
-            </Stack>
-          ) : (
-            <>
-              <Table>
-                <Table.Thead>
-                  <Table.Tr>
-                    <Table.Th>Item</Table.Th>
-                    <Table.Th>Quantity</Table.Th>
-                    <Table.Th>Actions</Table.Th>
-                    <Table.Th>Price</Table.Th>
-                    <Table.Th>Total</Table.Th>
-                  </Table.Tr>
-                </Table.Thead>
-                <Table.Tbody>
-                  {myCartItems.map((fooditem) => (
-                    <Table.Tr key={fooditem.cartitemid}>
-                      <Table.Td>{fooditem.name}</Table.Td>
-                      <Table.Td>
-                        <NumberInput
-                          maw={200}
-                          label="Choose Quantity"
-                          clampBehavior="strict"
-                          min={0}
-                          max={100}
-                          step={1}
-                          value={fooditem.quantity}
-                          allowNegative={false}
-                          onChange={(value) => {
-                            modifyCartItemsHandler(Number(fooditem.itemid), Number(value));
-                          }}
-                        />
-                      </Table.Td>
-                      <Table.Td>
-                        <Tooltip label="Remove item" position="top">
-                          <Button
-                            variant="light"
-                            onClick={() => removeItemsFromCart(Number(fooditem.itemid))}
-                          >
-                            <IconX size={24} />
-                          </Button>
-                        </Tooltip>
-                      </Table.Td>
-                      <Table.Td>${fooditem.price}</Table.Td>
-                      <Table.Td>${(fooditem.price * fooditem.quantity).toFixed(2)} </Table.Td>
+    <>
+      <Stack gap="lg">
+        {isLoadingCartItems ? (
+          <div>Loading...</div>
+        ) : (
+          <Stack>
+            <Title order={3}>Your Cart ({cartItems.length})</Title>
+            {cartItems.length === 0 ? (
+              <Stack gap="md" align="center">
+                Your cart is empty!
+                <Link href="/">
+                  <Button variant="primary">Fill It Up</Button>
+                </Link>
+              </Stack>
+            ) : (
+              <>
+                <Table
+                  highlightOnHover
+                  // withColumnBorders
+                  style={{ overflow: 'scroll' }}
+                >
+                  <Table.Thead>
+                    <Table.Tr>
+                      <Table.Th>Item</Table.Th>
+                      <Table.Th>Quantity</Table.Th>
+                      <Table.Th>Actions</Table.Th>
+                      <Table.Th>Price</Table.Th>
+                      <Table.Th>Total</Table.Th>
                     </Table.Tr>
-                  ))}
-                  <Table.Tr>
-                    <Table.Td colSpan={4}>
-                      <Text fw="bold">Subtotal:</Text>
-                    </Table.Td>
-                    <Table.Td>
-                      <Text fw="bold">${totals.subtotal.toFixed(2)}</Text>
-                    </Table.Td>
-                  </Table.Tr>
-                  <Table.Tr>
-                    <Table.Td colSpan={4}>
-                      <Text fw="bold">Tax (15%):</Text>
-                    </Table.Td>
-                    <Table.Td>
-                      <Text fw="bold">${totals.tax.toFixed(2)}</Text>
-                    </Table.Td>
-                  </Table.Tr>
-                  <Table.Tr>
-                    <Table.Td colSpan={4}>
-                      <Text fw="bold">Total:</Text>
-                    </Table.Td>
-                    <Table.Td>
-                      <Text fw="bold">${totals.total.toFixed(2)}</Text>
-                    </Table.Td>
-                  </Table.Tr>
-                </Table.Tbody>
-              </Table>{' '}
-              <Stack>
-                {/* <Title order={3}>Your Total</Title> */}
-                {/* <Table striped>
+                  </Table.Thead>
+                  <Table.Tbody>
+                    {myCartItems.map((fooditem) => (
+                      <Table.Tr key={fooditem.cartitemid}>
+                        <Table.Td>{fooditem.name}</Table.Td>
+                        <Table.Td>
+                          <NumberInput
+                            maw={200}
+                            label="Choose Quantity"
+                            clampBehavior="strict"
+                            min={0}
+                            max={100}
+                            step={1}
+                            value={fooditem.quantity}
+                            allowNegative={false}
+                            onChange={(value) => {
+                              modifyCartItemsHandler(Number(fooditem.itemid), Number(value));
+                            }}
+                          />
+                        </Table.Td>
+                        <Table.Td>
+                          <Tooltip label="Remove item" position="top">
+                            <Button
+                              variant="light"
+                              onClick={() => removeItemsFromCart(Number(fooditem.itemid))}
+                            >
+                              <IconX size={24} />
+                            </Button>
+                          </Tooltip>
+                        </Table.Td>
+                        <Table.Td>${fooditem.price}</Table.Td>
+                        <Table.Td>${(fooditem.price * fooditem.quantity).toFixed(2)} </Table.Td>
+                      </Table.Tr>
+                    ))}
+                    <Table.Tr>
+                      <Table.Td colSpan={4}>
+                        <Text fw="bold">Subtotal:</Text>
+                      </Table.Td>
+                      <Table.Td>
+                        <Text fw="bold">${totals.subtotal.toFixed(2)}</Text>
+                      </Table.Td>
+                    </Table.Tr>
+                    <Table.Tr>
+                      <Table.Td colSpan={4}>
+                        <Text fw="bold">Tax (15%):</Text>
+                      </Table.Td>
+                      <Table.Td>
+                        <Text fw="bold">${totals.tax.toFixed(2)}</Text>
+                      </Table.Td>
+                    </Table.Tr>
+                    <Table.Tr>
+                      <Table.Td colSpan={4}>
+                        <Text fw="bold">Total:</Text>
+                      </Table.Td>
+                      <Table.Td>
+                        <Text fw="bold">${totals.total.toFixed(2)}</Text>
+                      </Table.Td>
+                    </Table.Tr>
+                  </Table.Tbody>
+                </Table>{' '}
+                <Stack>
+                  {/* <Title order={3}>Your Total</Title> */}
+                  {/* <Table striped>
                   <Table.Tbody>
                   
                   </Table.Tbody>
                 </Table>
               </Stack> */}
-              </Stack>
-              <Flex justify="end">
-                <Button
-                  size="large"
-                  variant="primary"
-                  style={{ width: 'fit-content' }}
-                  onClick={handleCheckout}
-                  disabled={createOrderMutation.isLoading}
-                >
-                  Proceed to pay
-                </Button>
-              </Flex>
-            </>
-          )}
-        </Stack>
-      )}
-    </Stack>
+                </Stack>
+                <Flex justify="end">
+                  <Button
+                    size="large"
+                    variant="primary"
+                    style={{ width: 'fit-content' }}
+                    onClick={() => {
+                      router.push('/address/select');
+                    }}
+                    disabled={modifyItemsInCartMutation.isLoading}
+                  >
+                    Proceed
+                  </Button>
+                </Flex>
+              </>
+            )}
+          </Stack>
+        )}
+      </Stack>
+    </>
   );
 }
 

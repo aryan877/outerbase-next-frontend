@@ -1,4 +1,3 @@
-import { stripe } from '@/lib/stripe';
 import { Order } from '@/types/types';
 import z from 'zod';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
@@ -46,35 +45,35 @@ export const stripeRouter = createTRPCRouter({
           currency: process.env.NEXT_PUBLIC_CURRENCY,
         };
 
-        // const intentCreationResponse = await fetch(
-        //   `${process.env.OUTERBASE_COMMANDS_ROOT_DOMAIN}/create-stripe-pi`,
-        //   {
-        //     method: 'POST',
-        //     headers: {
-        //       'Content-Type': 'application/json',
-        //     },
-        //     body: JSON.stringify(intentCreationRequestBody),
-        //   }
-        // );
+        const intentCreationResponse = await fetch(
+          `${process.env.OUTERBASE_COMMANDS_ROOT_DOMAIN}/create-stripe-pi`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(intentCreationRequestBody),
+          }
+        );
 
-        const paymentIntent = await stripe.paymentIntents.create({
-          amount: Math.round(order.total_price * 100),
-          currency: String(process.env.NEXT_PUBLIC_CURRENCY).toLowerCase(),
-          automatic_payment_methods: {
-            enabled: true,
-          },
-        });
+        // const paymentIntent = await stripe.paymentIntents.create({
+        //   amount: Math.round(order.total_price * 100),
+        //   currency: String(process.env.NEXT_PUBLIC_CURRENCY).toLowerCase(),
+        //   automatic_payment_methods: {
+        //     enabled: true,
+        //   },
+        // });
 
-        // if (!intentCreationResponse.ok) {
-        //   throw new Error('Failed to create intent');
-        // }
+        if (!intentCreationResponse.ok) {
+          throw new Error('Failed to create intent');
+        }
 
-        // const paymentIntent = await intentCreationResponse.json();
+        const paymentIntent = await intentCreationResponse.json();
 
         const updateIntentRequestBody = {
           orderid,
-          // intentid: paymentIntent.response.id as string,
-          intentid: paymentIntent.id as string,
+          intentid: paymentIntent.response.id as string,
+          // intentid: paymentIntent.id as string,
         };
 
         const intentUpdationResponse = await fetch(
@@ -93,8 +92,8 @@ export const stripeRouter = createTRPCRouter({
         }
 
         return {
-          // clientSecret: paymentIntent.response.client_secret as string,
-          clientSecret: paymentIntent.client_secret as string,
+          clientSecret: paymentIntent.response.client_secret as string,
+          // clientSecret: paymentIntent.client_secret as string,
         };
       } catch (error) {
         console.error('Failed to create payment intent:', error);

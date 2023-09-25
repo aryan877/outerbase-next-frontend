@@ -11,8 +11,8 @@ function Address() {
     data: { response: { items: addresses } = { items: [] } } = {},
     isLoading: isLoadingAddresses,
   } = trpc.address.getUserAddresses.useQuery(undefined, {
-    // staleTime: 10 * (60 * 1000), // 10 mins
-    // cacheTime: 15 * (60 * 1000), // 15 mins
+    staleTime: 10 * (60 * 1000), // 10 mins
+    cacheTime: 15 * (60 * 1000), // 15 mins
   });
 
   const myAddresses: Address[] = addresses;

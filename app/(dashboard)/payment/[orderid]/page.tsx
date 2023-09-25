@@ -1,6 +1,6 @@
 'use client';
 import { trpc } from '@/app/_trpc/client';
-import { Order } from '@/types/types';
+import { Address, Order } from '@/types/types';
 import { Text } from '@mantine/core';
 import { Elements } from '@stripe/react-stripe-js';
 import { StripeElementsOptions, loadStripe } from '@stripe/stripe-js';
@@ -12,7 +12,6 @@ const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
 
 const PayPage = ({ params }: { params: { orderid: string } }) => {
   const [clientSecret, setClientSecret] = useState('');
-
   const { orderid } = params;
 
   const { data, isLoading } = trpc.stripe.createIntent.useQuery(
@@ -46,6 +45,17 @@ const PayPage = ({ params }: { params: { orderid: string } }) => {
       theme: 'stripe',
     },
   };
+
+  //address data for address picking
+  const {
+    data: { response: { items: addresses } = { items: [] } } = {},
+    isLoading: isLoadingAddresses,
+  } = trpc.address.getUserAddresses.useQuery(undefined, {
+    staleTime: 10 * (60 * 1000), // 10 mins
+    cacheTime: 15 * (60 * 1000), // 15 mins
+  });
+
+  const myAddresses: Address[] = addresses;
 
   return isLoading || !clientSecret ? (
     <div>Loading...</div>
