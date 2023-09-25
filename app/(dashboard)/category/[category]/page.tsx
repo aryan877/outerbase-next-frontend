@@ -18,7 +18,7 @@ function Page() {
     data: { response: { items: foodItems } = { items: [] } } = {},
     isLoading: isLoadingFoodItems,
   } = trpc.category.listCategoryItems.useQuery(
-    { slug: category },
+    { slug: category as string },
     {
       staleTime: 10 * (60 * 1000), // 10 mins
       cacheTime: 15 * (60 * 1000), // 15 mins
@@ -80,7 +80,7 @@ function Page() {
 
   return (
     <Stack>
-      <Title order={4}>{formatCategoryName(category)}</Title>
+      <Title order={3}>{formatCategoryName(category as string)}</Title>
       {isLoadingFoodItems || isLoadingCartItems ? (
         <div>Loading...</div>
       ) : (

@@ -23,7 +23,7 @@ export const categoryRouter = createTRPCRouter({
     }
   }),
   listCategoryItems: protectedProcedure
-    .input(z.object({ slug: z.string().min(4) }))
+    .input(z.object({ slug: z.string() }))
     .query(async (opts) => {
       try {
         const slug = opts.input.slug;

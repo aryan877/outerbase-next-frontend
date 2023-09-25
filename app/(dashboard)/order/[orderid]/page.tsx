@@ -124,8 +124,10 @@ function Page({ params }: { params: { orderid: string } }) {
                   </Text>
                 )}
                 <Text>
-                  <strong>Delivery Address:</strong> {orderItem.street}
+                  <strong>Delivery Address:</strong> {orderItem.flat_number}, {orderItem.street},{' '}
+                  {orderItem.landmark}, {orderItem.state}, {orderItem.pincode}
                 </Text>
+
                 {orderItem.payment_status !== undefined && (
                   <Text>
                     <strong>Payment Status:</strong>{' '}

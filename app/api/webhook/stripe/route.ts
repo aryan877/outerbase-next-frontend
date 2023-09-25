@@ -28,8 +28,7 @@ export async function POST(req: Request, res: NextResponse) {
         mailgunapikey,
         restaurantname,
         fromemail,
-        fname: 'aryan',
-        email: 'aryankumar877@gmail.com',
+        tax_percentage: process.env.NEXT_PUBLIC_TAX_PERCENTAGE,
       });
 
       const paymentUpdationResponse = await fetch(
