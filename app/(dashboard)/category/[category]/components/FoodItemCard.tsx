@@ -25,7 +25,11 @@ function FoodItemCard({ fooditem, cartItem, modifyCartItemsHandler }: FoodItemCa
           <Text size="lg" fw={700}>
             {fooditem.name}
           </Text>
-          <Text size="md">${fooditem.price}</Text>
+          <Text size="md">
+            {' '}
+            {process.env.NEXT_PUBLIC_CURRENCY_SYMBOL}
+            {fooditem.price}
+          </Text>
           {quantity === 0 ? (
             <Button
               w={200}

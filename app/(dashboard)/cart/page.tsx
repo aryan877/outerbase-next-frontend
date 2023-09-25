@@ -192,8 +192,15 @@ function CartPage() {
                             </Button>
                           </Tooltip>
                         </Table.Td>
-                        <Table.Td>${fooditem.price}</Table.Td>
-                        <Table.Td>${(fooditem.price * fooditem.quantity).toFixed(2)} </Table.Td>
+                        <Table.Td>
+                          {process.env.NEXT_PUBLIC_CURRENCY_SYMBOL}
+                          {fooditem.price}
+                        </Table.Td>
+                        <Table.Td>
+                          {' '}
+                          {process.env.NEXT_PUBLIC_CURRENCY_SYMBOL}
+                          {(fooditem.price * fooditem.quantity).toFixed(2)}{' '}
+                        </Table.Td>
                       </Table.Tr>
                     ))}
                     <Table.Tr>
@@ -201,7 +208,11 @@ function CartPage() {
                         <Text fw="bold">Subtotal:</Text>
                       </Table.Td>
                       <Table.Td>
-                        <Text fw="bold">${totals.subtotal.toFixed(2)}</Text>
+                        <Text fw="bold">
+                          {' '}
+                          {process.env.NEXT_PUBLIC_CURRENCY_SYMBOL}
+                          {totals.subtotal.toFixed(2)}
+                        </Text>
                       </Table.Td>
                     </Table.Tr>
                     <Table.Tr>
@@ -209,7 +220,11 @@ function CartPage() {
                         <Text fw="bold">Tax (15%):</Text>
                       </Table.Td>
                       <Table.Td>
-                        <Text fw="bold">${totals.tax.toFixed(2)}</Text>
+                        <Text fw="bold">
+                          {' '}
+                          {process.env.NEXT_PUBLIC_CURRENCY_SYMBOL}
+                          {totals.tax.toFixed(2)}
+                        </Text>
                       </Table.Td>
                     </Table.Tr>
                     <Table.Tr>
@@ -217,7 +232,11 @@ function CartPage() {
                         <Text fw="bold">Total:</Text>
                       </Table.Td>
                       <Table.Td>
-                        <Text fw="bold">${totals.total.toFixed(2)}</Text>
+                        <Text fw="bold">
+                          {' '}
+                          {process.env.NEXT_PUBLIC_CURRENCY_SYMBOL}
+                          {totals.total.toFixed(2)}
+                        </Text>
                       </Table.Td>
                     </Table.Tr>
                   </Table.Tbody>

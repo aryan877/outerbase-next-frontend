@@ -1,5 +1,5 @@
 import { Box, NavLink } from '@mantine/core';
-import { IconHistory, IconLocation, IconMenuOrder, IconMessage } from '@tabler/icons-react';
+import { IconHistory, IconLocation, IconMenuOrder } from '@tabler/icons-react';
 import Link from 'next/link';
 import { useParams, usePathname } from 'next/navigation';
 import React from 'react';
@@ -53,11 +53,11 @@ const main_dashboard_links = [
     label: 'Address',
     href: '/address',
   },
-  {
-    icon: IconMessage, // Use the "Message" icon for "Customer Care"
-    label: 'Customer Care',
-    href: '/customer_care',
-  },
+  // {
+  //   icon: IconMessage, // Use the "Message" icon for "Customer Care"
+  //   label: 'Customer Care',
+  //   href: '/customer_care',
+  // },
 ];
 
 export default function Navbar() {

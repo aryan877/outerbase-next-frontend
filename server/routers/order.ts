@@ -120,30 +120,37 @@ export const orderRouter = createTRPCRouter({
         throw new Error('Failed to create order');
       }
     }),
-  getOrders: protectedProcedure.query(async (opts) => {
-    try {
-      const userid = opts.ctx.auth.userId;
-      const url = `${
-        process.env.OUTERBASE_COMMANDS_ROOT_DOMAIN
-      }/get-orders-list?userid=${encodeURIComponent(userid)}`;
+  getOrders: protectedProcedure
+    .input(
+      z.object({
+        page: z.number(),
+      })
+    )
+    .query(async (opts) => {
+      try {
+        const userid = opts.ctx.auth.userId;
+        const page = opts.input.page;
+        const url = `${
+          process.env.OUTERBASE_COMMANDS_ROOT_DOMAIN
+        }/get-orders-list?userid=${encodeURIComponent(userid)}&page=${page}`;
 
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      if (!response.ok) {
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        if (!response.ok) {
+          throw new Error('Failed to get list of orders');
+        }
+        const data = await response.json();
+
+        return data;
+      } catch (error) {
+        console.error('Error getting list of orders:', error);
         throw new Error('Failed to get list of orders');
       }
-      const data = await response.json();
-
-      return data;
-    } catch (error) {
-      console.error('Error getting list of orders:', error);
-      throw new Error('Failed to get list of orders');
-    }
-  }),
+    }),
   getOrderById: protectedProcedure.input(z.object({ orderid: z.string() })).query(async (opts) => {
     try {
       const url = `${
@@ -167,4 +174,60 @@ export const orderRouter = createTRPCRouter({
       throw new Error('Failed to get order by id');
     }
   }),
+  getOrderCount: protectedProcedure.query(async (opts) => {
+    try {
+      const userid = opts.ctx.auth.userId;
+      const url = `${
+        process.env.OUTERBASE_COMMANDS_ROOT_DOMAIN
+      }/get-user-order-count?userid=${encodeURIComponent(userid)}`;
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (!response.ok) {
+        throw new Error('Failed to get order count');
+      }
+      const data = await response.json();
+
+      return data;
+    } catch (error) {
+      console.error('Error getting order count:', error);
+      throw new Error('Failed to get order count');
+    }
+  }),
+  sendOrderQuery: protectedProcedure
+    .input(z.object({ query: z.string(), phoneNumber: z.string(), orderid: z.string() }))
+    .mutation(async (opts) => {
+      try {
+        const user = await clerkClient.users.getUser(opts.ctx.auth.userId);
+        const requestBody = JSON.stringify({
+          query: opts.input.query,
+          email: user.emailAddresses[0]?.emailAddress as string,
+          first_name: capitalizeFirstLetter(user.firstName as string) as string,
+          orderid: opts.input.orderid,
+          phone_number: opts.input.phoneNumber,
+        });
+
+        const response = await fetch(
+          `${process.env.OUTERBASE_COMMANDS_ROOT_DOMAIN}/send-customer-query-slack`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: requestBody,
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error('Failed to send query to slack');
+        }
+      } catch (error) {
+        console.error('Error sending query to slack:', error);
+        throw new Error('Failed to send query to slack');
+      }
+    }),
 });
