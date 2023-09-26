@@ -46,7 +46,7 @@ export const cartRouter = createTRPCRouter({
       const userid = opts.ctx.auth.userId;
       const url = `${
         process.env.OUTERBASE_COMMANDS_ROOT_DOMAIN
-      }/get-cart-items?userid=${encodeURIComponent(userid)}`;
+      }/get-cart-items-unpopulated?userid=${encodeURIComponent(userid)}`;
 
       const response = await fetch(url, {
         method: 'GET',
@@ -78,14 +78,14 @@ export const cartRouter = createTRPCRouter({
         },
       });
       if (!response.ok) {
-        throw new Error('Failed to get cart items');
+        throw new Error('Failed to get cart items populated');
       }
       const data = await response.json();
 
       return data;
     } catch (error) {
-      console.error('Error getting cart items:', error);
-      throw new Error('Failed to get cart items');
+      console.error('Error getting cart items populated:', error);
+      throw new Error('Failed to get cart items populated');
     }
   }),
 });

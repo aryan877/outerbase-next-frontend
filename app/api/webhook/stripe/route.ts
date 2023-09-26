@@ -29,6 +29,7 @@ export async function POST(req: Request, res: NextResponse) {
         restaurantname,
         fromemail,
         tax_percentage: process.env.NEXT_PUBLIC_TAX_PERCENTAGE,
+        slackwebhook: process.env.ORDER_NOTIFICATIONS_CHANNEL_WEBHOOK as string,
       });
 
       const paymentUpdationResponse = await fetch(

@@ -20,6 +20,7 @@ import 'dayjs/locale/en'; // Import the desired locale (e.g., English)
 import { useEffect, useState } from 'react';
 import ConfettiExplosion from 'react-confetti-explosion';
 import { QueryForm } from './components/QueryForm';
+import { ReviewForm } from './components/ReviewForm';
 function Page({ params }: { params: { orderid: string } }) {
   const { orderid } = params;
   const {
@@ -286,6 +287,16 @@ function Page({ params }: { params: { orderid: string } }) {
                 }}
               >
                 Help
+              </Button>
+              <Button
+                onClick={() => {
+                  modals.open({
+                    title: 'Leave a Review',
+                    children: <ReviewForm />,
+                  });
+                }}
+              >
+                Leave a Review
               </Button>
             </Stack>
           </Card>
