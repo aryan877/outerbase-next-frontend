@@ -1,4 +1,6 @@
+import { Category, FoodItem } from '@/types/types';
 import z from 'zod';
+import { s3 } from '..';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 export const categoryRouter = createTRPCRouter({
   listCategories: protectedProcedure.query(async () => {
@@ -9,13 +11,19 @@ export const categoryRouter = createTRPCRouter({
           'Content-Type': 'application/json',
         },
       });
-
       if (!response.ok) {
         throw new Error('Failed to fetch categories');
       }
-
       const data = await response.json();
-
+      data.response.items.forEach(async (item: Category) => {
+        const s3Params = {
+          Bucket: process.env.BUCKET_NAME,
+          Key: item.image,
+          Expires: 3600,
+        };
+        const presignedUrl = s3.getSignedUrl('getObject', s3Params);
+        item.image = presignedUrl;
+      });
       return data;
     } catch (error) {
       console.error('Error listing categories:', error);
@@ -41,6 +49,20 @@ export const categoryRouter = createTRPCRouter({
           throw new Error('Failed to fetch category items');
         }
         const data = await response.json();
+
+        data.response.items.forEach(async (item: FoodItem) => {
+          if (item.image) {
+            const s3Params = {
+              Bucket: process.env.BUCKET_NAME,
+              Key: item.image,
+              Expires: 3600,
+            };
+
+            const presignedUrl = s3.getSignedUrl('getObject', s3Params);
+            item.image = presignedUrl;
+          }
+        });
+
         return data;
       } catch (error) {
         console.error('Error listing category items:', error);

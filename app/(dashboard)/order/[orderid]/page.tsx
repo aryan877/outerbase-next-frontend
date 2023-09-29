@@ -124,7 +124,7 @@ function Page({ params }: { params: { orderid: string } }) {
                 )}
               </Text> */}
               <Text>
-                {orderItem.ordered_at && (
+                {orderItem?.ordered_at && (
                   <>
                     <strong>Ordered At:</strong>{' '}
                     {dayjs(orderItem?.ordered_at).format('D MMM YYYY, h:mm a')}

@@ -26,7 +26,7 @@ export const orderRouter = createTRPCRouter({
         });
 
         const response = await fetch(
-          `${process.env.OUTERBASE_COMMANDS_ROOT_DOMAIN}/create-order-entry-from-cart`,
+          `${process.env.OUTERBASE_COMMANDS_ROOT_DOMAIN}/create-order-entry-cart`,
           {
             method: 'POST',
             headers: {
