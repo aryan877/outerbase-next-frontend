@@ -14,8 +14,8 @@ import TRPCProvider from './_trpc/provider';
 import './styles/globals.css';
 
 export const metadata = {
-  title: 'Ethereal Sync',
-  description: 'Collboration Made easy for youtube creators',
+  title: `${process.env.NEXT_PUBLIC_RESTAURANT_NAME} - Best Restaurant in Your City`,
+  description: `Discover the exquisite flavors and exceptional dining experience at ${process.env.NEXT_PUBLIC_RESTAURANT_NAME}. Order now and indulge in a culinary delight like no other.`,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
