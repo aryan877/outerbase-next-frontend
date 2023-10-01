@@ -17,7 +17,7 @@ export function AddFoodItemForm() {
     },
     validate: {
       name: (value) => (value ? null : 'Food item name is required'),
-      description: (value) => (value ? null : 'Description is required'),
+      description: (value) => null,
       price: (value) =>
         value && !isNaN(parseFloat(value)) && isFinite(parseFloat(value))
           ? null
@@ -89,7 +89,6 @@ export function AddFoodItemForm() {
               {...form.getInputProps('name')}
             />
             <TextInput
-              withAsterisk
               label="Description"
               placeholder="Enter description"
               {...form.getInputProps('description')}

@@ -3,7 +3,10 @@ import { trpc } from '@/app/_trpc/client';
 import { Address } from '@/types/types';
 import { Button, Card, Group, Stack, Text, Title } from '@mantine/core';
 import { modals } from '@mantine/modals';
+import { notifications } from '@mantine/notifications';
 import { IconMapPin, IconPhone, IconPlus, IconTrash } from '@tabler/icons-react';
+import { useQueryClient } from '@tanstack/react-query';
+import { getQueryKey } from '@trpc/react-query';
 import { AddAddressForm } from './components/AddAddressForm';
 
 function Address() {
@@ -15,11 +18,15 @@ function Address() {
     cacheTime: 15 * (60 * 1000), // 15 mins
   });
 
+  const queryClient = useQueryClient();
+
   const myAddresses: Address[] = addresses;
+
+  const deleteAddressMutation = trpc.address.deleteUserAddress.useMutation();
 
   const openDeleteAddressModal = (id: number) =>
     modals.openConfirmModal({
-      title: 'Please confirm deletion',
+      title: 'Please Confirm Deletion',
       children: (
         <Text size="sm">
           This action will permanently delete the selected address. Are you sure you want to
@@ -28,7 +35,50 @@ function Address() {
       ),
       labels: { confirm: 'Confirm', cancel: 'Cancel' },
       onCancel: () => console.log('Cancel'),
-      onConfirm: () => console.log('Confirmed'),
+      onConfirm: () => {
+        const deletingAddressNotificationId = notifications.show({
+          loading: true,
+          title: 'Deleting Address',
+          message: 'Deleting the address...',
+          color: 'yellow',
+        });
+
+        deleteAddressMutation.mutate(
+          { addressId: Number(id) },
+          {
+            onSuccess: () => {
+              notifications.update({
+                id: deletingAddressNotificationId,
+                loading: false,
+                title: 'Address Deleted Successfully',
+                message: 'The address has been deleted successfully.',
+                autoClose: 2000,
+                color: 'green',
+              });
+
+              const listUserAddressesQueryKey = getQueryKey(
+                trpc.address.getUserAddresses,
+                undefined,
+                'query'
+              );
+              queryClient.refetchQueries(listUserAddressesQueryKey);
+            },
+            onError: () => {
+              notifications.update({
+                id: deletingAddressNotificationId,
+                loading: false,
+                title: 'Failed to Delete Address',
+                message: 'An error occurred while deleting the address. Please try again later.',
+                autoClose: 2000,
+                color: 'red',
+              });
+            },
+            onSettled: () => {
+              modals.closeAll();
+            },
+          }
+        );
+      },
     });
 
   return (

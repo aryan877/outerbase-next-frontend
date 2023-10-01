@@ -116,4 +116,43 @@ export const addressRouter = createTRPCRouter({
         throw new Error('Failed to get address by id');
       }
     }),
+  deleteUserAddress: protectedProcedure
+    .input(
+      z.object({
+        addressId: z.number(),
+      })
+    )
+    .mutation(async (opts) => {
+      try {
+        const addressId = opts.input.addressId;
+        const userid = opts.ctx.auth.userId;
+
+        const requestBody = JSON.stringify({
+          userid,
+          addressid: addressId,
+        });
+
+        const response = await fetch(
+          `${process.env.OUTERBASE_COMMANDS_ROOT_DOMAIN}/delete-user-address`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: requestBody,
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error('Failed to delete user address');
+        }
+
+        const data = await response.json();
+
+        return data;
+      } catch (error) {
+        console.error('Error deleting user address:', error);
+        throw new Error('Failed to delete user address');
+      }
+    }),
 });
