@@ -65,12 +65,12 @@ const PaymentForm = ({ orderid }: { orderid: string }) => {
 
     setIsLoading(true);
 
-    const isDev = process.env.NODE_ENV === 'development';
+    // const isDev = process.env.NODE_ENV === 'development';
 
     // Redirect to the success URL with the hash parameter
-    const successUrl = isDev
-      ? `http://localhost:3000/order/${orderid}#success`
-      : `${process.env.NEXT_PUBLIC_DOMAIN}/order/${orderid}#success`;
+    const successUrl =
+      // ? `http://localhost:3000/order/${orderid}#success`
+      `${process.env.NEXT_PUBLIC_DOMAIN}/order/${orderid}#success`;
 
     const { error } = await stripe.confirmPayment({
       elements,

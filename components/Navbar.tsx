@@ -1,5 +1,5 @@
 import { Box, NavLink } from '@mantine/core';
-import { IconHistory, IconLocation, IconMenuOrder } from '@tabler/icons-react';
+import { IconEdit, IconHistory, IconLocation, IconMenuOrder } from '@tabler/icons-react';
 import Link from 'next/link';
 import { useParams, usePathname } from 'next/navigation';
 import React from 'react';
@@ -53,39 +53,31 @@ const main_dashboard_links = [
     label: 'Address',
     href: '/address',
   },
-  // {
-  //   icon: IconMessage, // Use the "Message" icon for "Customer Care"
-  //   label: 'Customer Care',
-  //   href: '/customer_care',
-  // },
+];
+
+const admin_link_components = [
+  {
+    icon: IconEdit,
+    label: 'Edit Menu',
+    href: '/admin/edit_menu',
+  },
 ];
 
 export default function Navbar() {
-  // Get the current pathname of the page using the usePathname hook
   const pathName = usePathname();
   const { id } = useParams();
 
-  // Generate individual dashboard link (representing /dashboard route)
   const dashboardLinkComponent = dashboard.map((item) => (
     <NavLinkComponent item={item} pathName={pathName} key={item.label} />
   ));
 
-  // Generate main page links (e.g., subscriptions, connecting YT) that are not related to projects
   const mainPageLinkComponents = main_dashboard_links.map((item) => (
     <NavLinkComponent item={item} pathName={pathName} key={item.label} />
   ));
 
-  // const { data: { data: project } = {}, isLoading } = trpc.projects.listProject.useQuery(
-  //   {
-  //     projectId: id,
-  //   },
-  //   {
-  //     enabled: !!id,
-  //     onSuccess: ({ data }: { data: Project }) => {
-  //       useProjectStore.getState().setProject(data as Project);
-  //     },
-  //   }
-  // );
+  const adminLinkComponents = admin_link_components.map((item) => (
+    <NavLinkComponent item={item} pathName={pathName} key={item.label} />
+  ));
 
   return (
     <Box w="100%">
@@ -93,6 +85,8 @@ export default function Navbar() {
       {dashboardLinkComponent}
       <NavLink label="Account" disabled></NavLink>
       {mainPageLinkComponents}
+      <NavLink label="Admin" disabled></NavLink>
+      {adminLinkComponents}
     </Box>
   );
 }

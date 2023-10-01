@@ -3,7 +3,7 @@ import { trpc } from '@/app/_trpc/client';
 import { Address } from '@/types/types';
 import { Button, Card, Group, Stack, Text, Title } from '@mantine/core';
 import { modals } from '@mantine/modals';
-import { IconMapPin, IconPhone, IconPlus } from '@tabler/icons-react';
+import { IconMapPin, IconPhone, IconPlus, IconTrash } from '@tabler/icons-react';
 import { AddAddressForm } from './components/AddAddressForm';
 
 function Address() {
@@ -16,6 +16,20 @@ function Address() {
   });
 
   const myAddresses: Address[] = addresses;
+
+  const openDeleteAddressModal = (id: number) =>
+    modals.openConfirmModal({
+      title: 'Please confirm deletion',
+      children: (
+        <Text size="sm">
+          This action will permanently delete the selected address. Are you sure you want to
+          proceed?
+        </Text>
+      ),
+      labels: { confirm: 'Confirm', cancel: 'Cancel' },
+      onCancel: () => console.log('Cancel'),
+      onConfirm: () => console.log('Confirmed'),
+    });
 
   return (
     <>
@@ -62,6 +76,18 @@ function Address() {
                       <IconPhone />
                       <Text>{address.phone_number}</Text>
                     </Group>
+                    <Button
+                      mt="md"
+                      onClick={() => {
+                        openDeleteAddressModal(address.addressid);
+                      }}
+                      w={200}
+                    >
+                      <Group>
+                        <IconTrash size={18} />
+                        <Text>Delete</Text>
+                      </Group>
+                    </Button>
                   </Stack>
                 </Card>
               ))

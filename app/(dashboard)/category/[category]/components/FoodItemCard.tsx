@@ -1,6 +1,7 @@
 // FoodItemCard.tsx
 import { CartItem, FoodItem } from '@/types/types'; // Import the types
 import { Button, Card, Group, Image, NumberInput, Stack, Text } from '@mantine/core';
+import { useState } from 'react';
 
 interface FoodItemCardProps {
   fooditem: FoodItem;
@@ -10,6 +11,7 @@ interface FoodItemCardProps {
 
 function FoodItemCard({ fooditem, cartItem, modifyCartItemsHandler }: FoodItemCardProps) {
   const quantity = cartItem ? cartItem.quantity : 0;
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   return (
     <Card withBorder shadow="xs" radius="lg" style={{ cursor: 'pointer' }}>
@@ -17,9 +19,19 @@ function FoodItemCard({ fooditem, cartItem, modifyCartItemsHandler }: FoodItemCa
         <Image
           height={200}
           width={200}
-          style={{ height: '200px', width: '200px' }}
+          style={{
+            height: '200px',
+            width: '200px',
+            display: imageLoaded ? 'block' : 'none',
+          }}
           src={fooditem.image}
           alt={fooditem.name}
+          onLoad={() => {
+            setImageLoaded(true);
+          }}
+          onError={() => {
+            setImageLoaded(false);
+          }}
         />
         <Stack>
           <Text size="lg" fw={700}>

@@ -4,7 +4,7 @@ import { Card, Image, Stack, Text, Title, useMantineTheme } from '@mantine/core'
 import Link from 'next/link';
 import { trpc } from '../_trpc/client';
 
-export default function FoodDeliveryPage() {
+export default function HomePage() {
   const theme = useMantineTheme();
 
   const { data: { response: { items } = { items: [] } } = {}, isLoading } =
@@ -47,12 +47,23 @@ export default function FoodDeliveryPage() {
                     {category.name}
                   </Text>
                   <Text>{category.description}</Text>
-                  <Image
-                    style={{ height: '200px', width: '200px' }}
-                    height={200}
-                    width={200}
-                    src={category.image}
-                  ></Image>
+                  {category.image && (
+                    <Image
+                      style={{ height: '200px', width: '200px' }}
+                      height={200}
+                      width={200}
+                      src={category.image}
+                      alt={`Image of ${category.name}`}
+                      onLoad={(e) => {
+                        // @ts-ignore
+                        e.target.style.display = 'block';
+                      }}
+                      onError={(e) => {
+                        // @ts-ignore
+                        e.target.style.display = 'none';
+                      }}
+                    ></Image>
+                  )}
                 </Stack>
               </Card>
             </Link>
