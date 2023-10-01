@@ -15,11 +15,13 @@ export const cartRouter = createTRPCRouter({
         const itemid = opts.input.itemid;
         const quantity = opts.input.quantity;
 
+        console.log(userid, itemid, quantity);
+
         // Create a request body JSON object with itemid and quantity
         const requestBody = JSON.stringify({ itemid, quantity, userid });
 
         const response = await fetch(
-          `${process.env.OUTERBASE_COMMANDS_ROOT_DOMAIN}/add-item-to-cart`,
+          `${process.env.OUTERBASE_COMMANDS_ROOT_DOMAIN}/modify-cart-items`,
           {
             method: 'POST',
             headers: {

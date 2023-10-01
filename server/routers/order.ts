@@ -40,6 +40,23 @@ export const orderRouter = createTRPCRouter({
           throw new Error('Failed to create order');
         }
 
+        const resetCartResponse = await fetch(
+          `${process.env.OUTERBASE_COMMANDS_ROOT_DOMAIN}/reset-cart`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              userid,
+            }),
+          }
+        );
+
+        if (!resetCartResponse.ok) {
+          throw new Error('Failed to resetCart');
+        }
+
         const data = await response.json();
 
         return { success: true, orderid: data.response.items[0][0].orderid as number };
@@ -127,7 +144,14 @@ export const orderRouter = createTRPCRouter({
     }
   }),
   sendOrderQuery: protectedProcedure
-    .input(z.object({ query: z.string(), phoneNumber: z.string(), orderid: z.string() }))
+    .input(
+      z.object({
+        query: z.string(),
+        phoneNumber: z.string(),
+        orderid: z.string(),
+        queryType: z.string(),
+      })
+    )
     .mutation(async (opts) => {
       try {
         const user = await clerkClient.users.getUser(opts.ctx.auth.userId);
@@ -138,6 +162,7 @@ export const orderRouter = createTRPCRouter({
           orderid: opts.input.orderid,
           phone_number: opts.input.phoneNumber,
           slackwebhook: process.env.CUSTOMER_QUERIES_CHANNEL_WEBHOOK as string,
+          query_type: opts.input.queryType,
         });
 
         const response = await fetch(
@@ -172,6 +197,10 @@ export const orderRouter = createTRPCRouter({
           review: String(opts.input.review),
           notion_integration_key: process.env.NOTION_INTEGRATION_KEY,
           notion_database_id: process.env.NOTION_DATABASE_ID,
+          mailgundomain: process.env.MAILGUN_DOMAIN,
+          mailgunapikey: process.env.MAILGUN_API_KEY,
+          restaurantname: process.env.NEXT_PUBLIC_RESTAURANT_NAME,
+          fromemail: process.env.FROM_EMAIL,
         });
 
         const response = await fetch(

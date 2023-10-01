@@ -1,5 +1,5 @@
 export type Category = {
-  image: string;
+  image: string | null;
   name: string;
   categoryid: string;
   slug: string;
@@ -9,7 +9,7 @@ export type Category = {
 export type FoodItem = {
   itemid: string;
   name: string;
-  image: string;
+  image: string | null;
   price: number;
   categoryid: string;
   description: string;
@@ -22,6 +22,7 @@ export type CartItem = {
   userid: string;
   quantity: number;
 };
+
 export type Order = {
   orderid?: number;
   userid: string;

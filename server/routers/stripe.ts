@@ -49,7 +49,7 @@ export const stripeRouter = createTRPCRouter({
         };
 
         const intentCreationResponse = await fetch(
-          `${process.env.OUTERBASE_COMMANDS_ROOT_DOMAIN}/create-stripe-pi`,
+          `${process.env.OUTERBASE_COMMANDS_ROOT_DOMAIN}//create-stripe-payment-intent`,
           {
             method: 'POST',
             headers: {

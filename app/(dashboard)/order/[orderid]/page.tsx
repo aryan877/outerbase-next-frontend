@@ -15,12 +15,14 @@ import {
 } from '@mantine/core';
 import { modals } from '@mantine/modals';
 import { IconBike, IconBowl, IconCheck, IconCooker } from '@tabler/icons-react';
-import dayjs from 'dayjs';
-import 'dayjs/locale/en'; // Import the desired locale (e.g., English)
+import { default as dayjs } from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import ConfettiExplosion from 'react-confetti-explosion';
 import { QueryForm } from './components/QueryForm';
 import { ReviewForm } from './components/ReviewForm';
+dayjs.extend(relativeTime);
 function Page({ params }: { params: { orderid: string } }) {
   const { orderid } = params;
   const {
@@ -141,16 +143,22 @@ function Page({ params }: { params: { orderid: string } }) {
                 <strong>Delivery Address:</strong> {orderItem.flat_number}, {orderItem.street},{' '}
                 {orderItem.landmark}, {orderItem.state}, {orderItem.pincode}
               </Text>
-
               {orderItem.payment_status !== undefined && (
-                <Text>
-                  <strong>Payment Status:</strong>{' '}
-                  {orderItem.payment_status ? (
-                    <Badge color="green">Paid</Badge>
-                  ) : (
-                    <Badge color="red">Unpaid</Badge>
+                <div>
+                  <Text>
+                    <strong>Payment Status:</strong>{' '}
+                    {orderItem.payment_status ? (
+                      <Badge color="green">Paid</Badge>
+                    ) : (
+                      <Badge color="red">Unpaid</Badge>
+                    )}
+                  </Text>
+                  {!orderItem.payment_status && (
+                    <Link href={`/payment/${orderItem.orderid}`}>
+                      <Button my="md">Retry Payment</Button>
+                    </Link>
                   )}
-                </Text>
+                </div>
               )}
 
               <Timeline
@@ -163,16 +171,13 @@ function Page({ params }: { params: { orderid: string } }) {
                     Your order has been placed successfully.
                   </Text>
                   <Text size="xs" mt={4}>
-                    2 hours ago
+                    {dayjs(orderItem.ordered_at).fromNow()}
                   </Text>
                 </Timeline.Item>
 
                 <Timeline.Item bullet={<IconCooker size={12} />} title="Preparation Started">
                   <Text c="dimmed" size="sm">
                     Your order preparation has started.
-                  </Text>
-                  <Text size="xs" mt={4}>
-                    52 minutes ago
                   </Text>
                 </Timeline.Item>
 
@@ -184,9 +189,6 @@ function Page({ params }: { params: { orderid: string } }) {
                   <Text c="dimmed" size="sm">
                     Your order is on the way.
                   </Text>
-                  <Text size="xs" mt={4}>
-                    15 minutes ago
-                  </Text>
                 </Timeline.Item>
 
                 <Timeline.Item
@@ -197,9 +199,11 @@ function Page({ params }: { params: { orderid: string } }) {
                   <Text c="dimmed" size="sm">
                     Your order has been successfully delivered.
                   </Text>
-                  <Text size="xs" mt={4}>
-                    34 minutes ago
-                  </Text>
+                  {orderItem.delivered_at && (
+                    <Text size="xs" mt={4}>
+                      {dayjs(orderItem.delivered_at).fromNow()}
+                    </Text>
+                  )}
                 </Timeline.Item>
               </Timeline>
 

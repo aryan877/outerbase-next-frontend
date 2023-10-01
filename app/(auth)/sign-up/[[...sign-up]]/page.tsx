@@ -11,7 +11,7 @@ export default function Page() {
   return (
     <Stack>
       <Text size="xl" variant="gradient" gradient={{ from: 'primary.6', to: 'primary.3', deg: 45 }}>
-        Sign up for Bloom
+        Sign up for {process.env.NEXT_PUBLIC_RESTAURANT_NAME}
       </Text>
       <SignUp appearance={appearance} />
     </Stack>

@@ -54,7 +54,7 @@ function Header({ toggle, opened }: { toggle: () => void; opened: boolean }) {
           fz="xl"
           fw={700}
         >
-          Bloom
+          {process.env.NEXT_PUBLIC_RESTAURANT_NAME}
         </Text>
       </Flex>
       <Flex

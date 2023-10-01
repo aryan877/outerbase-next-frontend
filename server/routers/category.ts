@@ -5,25 +5,36 @@ import { createTRPCRouter, protectedProcedure } from '../trpc';
 export const categoryRouter = createTRPCRouter({
   listCategories: protectedProcedure.query(async () => {
     try {
-      const response = await fetch(`${process.env.OUTERBASE_COMMANDS_ROOT_DOMAIN}/get-categories`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await fetch(
+        `${process.env.OUTERBASE_COMMANDS_ROOT_DOMAIN}/get-food-categories`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
       if (!response.ok) {
         throw new Error('Failed to fetch categories');
       }
+
       const data = await response.json();
+
       data.response.items.forEach(async (item: Category) => {
-        const s3Params = {
-          Bucket: process.env.BUCKET_NAME,
-          Key: item.image,
-          Expires: 3600,
-        };
-        const presignedUrl = s3.getSignedUrl('getObject', s3Params);
-        item.image = presignedUrl;
+        if (item.image) {
+          const s3Params = {
+            Bucket: process.env.BUCKET_NAME,
+            Key: item.image,
+            Expires: 3600,
+          };
+          const presignedUrl = s3.getSignedUrl('getObject', s3Params);
+          item.image = presignedUrl;
+        } else {
+          item.image = null;
+        }
       });
+
       return data;
     } catch (error) {
       console.error('Error listing categories:', error);
@@ -60,6 +71,8 @@ export const categoryRouter = createTRPCRouter({
 
             const presignedUrl = s3.getSignedUrl('getObject', s3Params);
             item.image = presignedUrl;
+          } else {
+            item.image = null;
           }
         });
 

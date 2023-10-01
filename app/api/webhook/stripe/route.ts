@@ -6,8 +6,11 @@ import Stripe from 'stripe';
 const webhookSecret = process.env.STRIPE_MARK_PAID_WEBHOOK_KEY;
 const mailgundomain = process.env.MAILGUN_DOMAIN;
 const mailgunapikey = process.env.MAILGUN_API_KEY;
-const restaurantname = process.env.RESTAURANT_NAME;
+const restaurantname = process.env.NEXT_PUBLIC_RESTAURANT_NAME;
 const fromemail = process.env.FROM_EMAIL;
+const twilioaccountsid = process.env.TWILIO_ACCOUNT_SID;
+const twilioauthtoken = process.env.TWILIO_AUTH_TOKEN;
+const twiliofromphonenumber = process.env.TWILIO_FROM_PHONE_NUMBER;
 
 export async function POST(req: Request, res: NextResponse) {
   const body = await req.text();
@@ -30,6 +33,9 @@ export async function POST(req: Request, res: NextResponse) {
         fromemail,
         tax_percentage: process.env.NEXT_PUBLIC_TAX_PERCENTAGE,
         slackwebhook: process.env.ORDER_NOTIFICATIONS_CHANNEL_WEBHOOK as string,
+        twilio_from_number: twiliofromphonenumber,
+        twilio_account_sid: twilioaccountsid,
+        twilio_auth_token: twilioauthtoken,
       });
 
       const paymentUpdationResponse = await fetch(
