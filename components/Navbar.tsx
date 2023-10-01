@@ -1,3 +1,4 @@
+import { useUser } from '@clerk/nextjs';
 import { Box, NavLink } from '@mantine/core';
 import { IconEdit, IconHistory, IconLocation, IconMenuOrder } from '@tabler/icons-react';
 import Link from 'next/link';
@@ -66,7 +67,7 @@ const admin_link_components = [
 export default function Navbar() {
   const pathName = usePathname();
   const { id } = useParams();
-
+  const user = useUser();
   const dashboardLinkComponent = dashboard.map((item) => (
     <NavLinkComponent item={item} pathName={pathName} key={item.label} />
   ));
@@ -85,8 +86,12 @@ export default function Navbar() {
       {dashboardLinkComponent}
       <NavLink label="Account" disabled></NavLink>
       {mainPageLinkComponents}
-      <NavLink label="Admin" disabled></NavLink>
-      {adminLinkComponents}
+      {user.user?.publicMetadata.role === 'admin' && (
+        <>
+          <NavLink label="Admin" disabled></NavLink>
+          {adminLinkComponents}
+        </>
+      )}
     </Box>
   );
 }

@@ -17,6 +17,7 @@
  *
  */
 import type { SignedInAuthObject, SignedOutAuthObject } from '@clerk/nextjs/api';
+import { clerkClient } from '@clerk/nextjs/api';
 import { getAuth } from '@clerk/nextjs/server';
 import { type CreateNextContextOptions } from '@trpc/server/adapters/next';
 
@@ -76,6 +77,21 @@ const isAuthed = t.middleware(({ next, ctx }) => {
   });
 });
 
+const isAuthedAdmin = t.middleware(async ({ next, ctx }) => {
+  // Check if a user is signed in by verifying the existence of a userId in the authentication context.
+  const user = await clerkClient.users.getUser(ctx.auth.userId as string);
+  if (user.publicMetadata.role !== 'admin') {
+    throw new TRPCError({ code: 'UNAUTHORIZED' });
+  }
+
+  // If the user is signed in, continue processing the request with the updated authentication context.
+  return next({
+    ctx: {
+      auth: ctx.auth,
+    },
+  });
+});
+
 /**
  * 3. ROUTER & PROCEDURE (THE IMPORTANT BIT)
  *
@@ -105,4 +121,4 @@ export const publicProcedure = t.procedure;
 export const protectedProcedure = t.procedure.use(isAuthed);
 
 // Procedure exclusively available to administrators based on organization role.
-// export const protectedAdminProcedure = t.procedure.use(isAdmin);
+export const protectedAdminProcedure = t.procedure.use(isAuthedAdmin);

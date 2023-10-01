@@ -2,7 +2,7 @@ import { Category, FoodItem } from '@/types/types';
 import slugify from 'slugify';
 import z from 'zod';
 import { s3 } from '..';
-import { createTRPCRouter, protectedProcedure } from '../trpc';
+import { createTRPCRouter, protectedAdminProcedure, protectedProcedure } from '../trpc';
 export const categoryRouter = createTRPCRouter({
   listCategories: protectedProcedure.query(async () => {
     try {
@@ -83,7 +83,7 @@ export const categoryRouter = createTRPCRouter({
         throw new Error('Failed to list category item');
       }
     }),
-  addCategory: protectedProcedure
+  addCategory: protectedAdminProcedure
     .input(z.object({ name: z.string(), description: z.string() }))
     .mutation(async (opts) => {
       const category_name = opts.input.name;
@@ -111,7 +111,7 @@ export const categoryRouter = createTRPCRouter({
 
       return { success: true };
     }),
-  addCategoryItem: protectedProcedure
+  addCategoryItem: protectedAdminProcedure
     .input(
       z.object({
         name: z.string(),
@@ -122,10 +122,9 @@ export const categoryRouter = createTRPCRouter({
     )
     .mutation(async (opts) => {
       const food_item_name = opts.input.name;
-      const food_item_description = opts.input.description;
+      const food_item_description = opts.input.description || '';
       const food_item_price = opts.input.price;
-      const food_item_category = opts.input.category;
-      const food_item_slug = slugify(food_item_name);
+      const food_item_slug = opts.input.category;
 
       const response = await fetch(`${process.env.OUTERBASE_COMMANDS_ROOT_DOMAIN}/add-food-item`, {
         method: 'POST',
@@ -136,7 +135,6 @@ export const categoryRouter = createTRPCRouter({
           food_item_name,
           food_item_description,
           food_item_price,
-          food_item_category,
           food_item_slug,
         }),
       });
@@ -147,7 +145,7 @@ export const categoryRouter = createTRPCRouter({
 
       return { success: true };
     }),
-  deleteCategory: protectedProcedure
+  deleteCategory: protectedAdminProcedure
     .input(z.object({ categoryid: z.number() }))
     .mutation(async (opts) => {
       const categoryid = opts.input.categoryid;
@@ -172,7 +170,7 @@ export const categoryRouter = createTRPCRouter({
 
       return { success: true };
     }),
-  deleteCategoryItem: protectedProcedure
+  deleteCategoryItem: protectedAdminProcedure
     .input(
       z.object({
         fooditemid: z.number(),
