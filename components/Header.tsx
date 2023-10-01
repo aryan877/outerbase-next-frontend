@@ -14,7 +14,7 @@ import {
   useMantineColorScheme,
   useMantineTheme,
 } from '@mantine/core';
-import { IconShoppingCart } from '@tabler/icons-react';
+import { IconPhoneCall, IconShoppingCart } from '@tabler/icons-react';
 import { useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -44,51 +44,57 @@ function Header({ toggle, opened }: { toggle: () => void; opened: boolean }) {
   }, 0);
 
   return (
-    <Flex justify="space-between" h="100%" align="center" p="md">
-      <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
-      <Flex justify="space-between" gap="md" align="center">
-        <Text
-          variant="gradient"
-          gradient={{ from: 'primary.6', to: 'primary.3', deg: 45 }}
-          ta="center"
-          fz="xl"
-          fw={700}
-        >
-          {process.env.NEXT_PUBLIC_RESTAURANT_NAME}
-        </Text>
-      </Flex>
-      <Flex
-        gap="md"
-        align="center"
-        style={{
-          position: 'relative',
-        }}
-      >
-        <Select
-          data={[
-            { value: 'light', label: 'Light' },
-            { value: 'dark', label: 'Dark' },
-            { value: 'auto', label: 'Auto' },
-          ]}
-          value={value}
-          onChange={(value) => {
-            setValue(value || 'auto');
-            setColorScheme((value as MantineColorScheme) || 'auto');
-          }}
-          defaultValue="auto"
-          placeholder="Select Mode"
-          style={{ minWidth: 150 }}
-        />
-
-        <Link href="/cart" style={{ textDecoration: 'none', color: 'inherit' }}>
-          <Group>
-            <IconShoppingCart />
-            <Text>Cart ({totalQuantity})</Text>
+    <>
+      <Flex justify="space-between" h="100%" align="center" p="md">
+        <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
+        <Flex justify="space-between" gap="md" align="center">
+          <Text
+            variant="gradient"
+            gradient={{ from: 'primary.6', to: 'primary.3', deg: 45 }}
+            ta="center"
+            fz="xl"
+            fw={700}
+          >
+            {process.env.NEXT_PUBLIC_RESTAURANT_NAME}
+          </Text>
+          <Group align="center">
+            <IconPhoneCall size={24} color="red" strokeWidth={1} />{' '}
+            <Text>{process.env.NEXT_PUBLIC_RESTAURANT_CONTACT_NO}</Text>
           </Group>
-        </Link>
-        <UserButton afterSignOutUrl="/sign-in" appearance={appearance} />
+        </Flex>
+        <Flex
+          gap="md"
+          align="center"
+          style={{
+            position: 'relative',
+          }}
+        >
+          <Select
+            data={[
+              { value: 'light', label: 'Light' },
+              { value: 'dark', label: 'Dark' },
+              { value: 'auto', label: 'Auto' },
+            ]}
+            value={value}
+            onChange={(value) => {
+              setValue(value || 'auto');
+              setColorScheme((value as MantineColorScheme) || 'auto');
+            }}
+            defaultValue="auto"
+            placeholder="Select Mode"
+            style={{ minWidth: 150 }}
+          />
+
+          <Link href="/cart" style={{ textDecoration: 'none', color: 'inherit' }}>
+            <Group>
+              <IconShoppingCart />
+              <Text>Cart ({totalQuantity})</Text>
+            </Group>
+          </Link>
+          <UserButton afterSignOutUrl="/sign-in" appearance={appearance} />
+        </Flex>
       </Flex>
-    </Flex>
+    </>
   );
 }
 
